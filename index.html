@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUINZOWORK | Plataforma Integrada</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
+  <!-- Navegação -->
+  <header class="navbar">
+    <div class="logo">QUINZOWORK</div>
+    <nav class="nav-links">
+      <button onclick="navigate('home')">Início</button>
+      <button onclick="navigate('loja')">Loja</button>
+      <button onclick="navigate('sistema')">Painel</button>
+    </nav>
+  </header>
+
+  <!-- 1. LANDING PAGE / INSTITUCIONAL -->
+  <section id="home" class="page active">
+    <div class="hero">
+      <h1>Bem-vindo ao QUINZOWORK</h1>
+      <p>Sua solução completa para serviços, produtos digitais e gestão eficiente.</p>
+      <button class="btn-primary" onclick="navigate('loja')">Explorar Loja</button>
+    </div>
+    <div class="features">
+      <div class="card">
+        <h3>Inovação</h3>
+        <p>Tecnologia de ponta para otimizar suas operações diárias.</p>
+      </div>
+      <div class="card">
+        <h3>Segurança</h3>
+        <p>Dados protegidos e integrados em tempo real com Supabase.</p>
+      </div>
+      <div class="card">
+        <h3>Praticidade</h3>
+        <p>Acesse e gerencie tudo diretamente pelo seu celular.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. LOJA VIRTUAL / E-COMMERCE -->
+  <section id="loja" class="page">
+    <h2>Nossa Loja</h2>
+    <div class="products-grid" id="products-list">
+      <!-- Produtos inseridos via JS -->
+    </div>
+    <div class="cart-summary">
+      <h3>Carrinho: <span id="cart-count">0</span> itens</h3>
+      <button class="btn-success" onclick="checkout()">Finalizar Compra</button>
+    </div>
+  </section>
+
+  <!-- 3. SISTEMA / APLICAÇÃO WEB (SUPABASE) -->
+  <section id="sistema" class="page">
+    <h2>Painel do Sistema</h2>
+    <div class="auth-box" id="auth-box">
+      <h3>Acessar Conta</h3>
+      <input type="email" id="email" placeholder="Seu e-mail">
+      <input type="password" id="password" placeholder="Sua senha">
+      <div class="auth-buttons">
+        <button onclick="login()">Entrar</button>
+        <button onclick="register()">Cadastrar</button>
+      </div>
+    </div>
+    <div class="dashboard" id="dashboard" style="display:none;">
+      <h3>Área do Cliente</h3>
+      <p>Você está conectado!</p>
+      <button class="btn-danger" onclick="logout()">Sair</button>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
