@@ -1,15 +1,10 @@
-// Configuração do Supabase (Insira suas chaves quando tiver)
-const SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
-const SUPABASE_KEY = 'SUA_CHAVE_ANON';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // Navegação entre abas
 function navigate(pageId) {
   document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
 }
 
-// Lista Inicial de Produtos do QUINZOWORK
+// Lista de Produtos do QUINZOWORK
 const products = [
   { id: 1, name: 'Serviço de Desenvolvimento Web', price: '2500,00', desc: 'Criação de site completo responsivo.' },
   { id: 2, name: 'Plano Mensal Suporte & Gestão', price: '350,00', desc: 'Manutenção e atualização contínua.' },
@@ -24,8 +19,8 @@ function loadProducts() {
   container.innerHTML = products.map(p => `
     <div class="card">
       <h3>${p.name}</h3>
-      <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">${p.desc}</p>
-      <p style="font-weight: bold; color: #0f3460;">KZ ${p.price}</p>
+      <p style="margin: 6px 0 12px 0; color: #94a3b8; font-size: 0.88rem;">${p.desc}</p>
+      <p style="font-weight: 800; color: #00f2fe; font-size: 1.1rem; margin-bottom: 12px;">KZ ${p.price}</p>
       <button class="btn-primary" onclick="addToCart()">Adicionar ao Carrinho</button>
     </div>
   `).join('');
@@ -40,28 +35,39 @@ function checkout() {
   alert(cartCount > 0 ? 'Pedido iniciado! Redirecionando...' : 'Seu carrinho está vazio.');
 }
 
-// Autenticação Supabase
-async function register() {
+// Autenticação (E-mail e Senha)
+function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-  const { user, error } = await _supabase.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else alert('Cadastro realizado! Verifique seu e-mail.');
-}
 
-async function login() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const { user, error } = await _supabase.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
-  else {
+  if (email && password) {
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('user-welcome').innerText = `Bem-vindo, ${email}!`;
+  } else {
+    alert('Preencha o e-mail e a senha para entrar.');
+  }
+}
+
+// Autenticação (Google)
+function loginWithGoogle() {
+  document.getElementById('auth-box').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('user-welcome').innerText = 'Conectado com sucesso via Conta Google!';
+}
+
+function register() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (email && password) {
+    alert('Cadastro realizado com sucesso! Faça login para entrar.');
+  } else {
+    alert('Preencha os campos para se cadastrar.');
   }
 }
 
 function logout() {
-  _supabase.auth.signOut();
   document.getElementById('auth-box').style.display = 'block';
   document.getElementById('dashboard').style.display = 'none';
 }
