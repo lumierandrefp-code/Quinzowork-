@@ -1,1 +1,12 @@
-
+{
+  "name": "quinzowork",
+  "version": "1.0.0",
+  "description": "Plataforma QUINZOWORK Integrada",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0"
+  }
+}
