@@ -1,123 +1,222 @@
-* { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
-  font-family: Arial, sans-serif; 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-body { 
-  background-color: #f4f6f8; 
-  color: #333; 
+body {
+  background-color: #080711;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(120, 40, 200, 0.25) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(0, 210, 255, 0.2) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+  min-height: 100vh;
 }
 
-.navbar { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  padding: 15px; 
-  background: #1a1a2e; 
-  color: #fff; 
+/* Navegação Futurista */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: rgba(15, 15, 30, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo { 
-  font-size: 1.2rem; 
-  font-weight: bold; 
+.logo {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00c6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
 }
 
-.nav-links button { 
-  background: none; 
-  border: none; 
-  color: #fff; 
-  margin-left: 10px; 
-  cursor: pointer; 
-  font-size: 0.9rem; 
+.nav-links button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  margin-left: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-.page { 
-  display: none; 
-  padding: 20px; 
+.nav-links button:active {
+  background: #00f2fe;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
 }
 
-.page.active { 
-  display: block; 
+.page {
+  display: none;
+  padding: 24px 16px;
 }
 
-.hero { 
-  text-align: center; 
-  padding: 40px 10px; 
-  background: #0f3460; 
-  color: #fff; 
-  border-radius: 8px; 
-  margin-bottom: 20px; 
+.page.active {
+  display: block;
 }
 
-.btn-primary, .btn-success, .btn-danger { 
-  border: none; 
-  padding: 10px 15px; 
-  border-radius: 5px; 
-  color: #fff; 
-  font-weight: bold; 
-  cursor: pointer; 
-  margin-top: 10px; 
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 45px 20px;
+  background: rgba(20, 20, 45, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.btn-primary { background: #e94560; }
-.btn-success { background: #28a745; }
-.btn-danger { background: #dc3545; }
-
-.features { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 15px; 
+.hero h1 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #ffffff, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.card { 
-  background: #fff; 
-  padding: 15px; 
-  border-radius: 8px; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+.hero p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
 
-.products-grid { 
-  display: grid; 
-  grid-template-columns: 1fr; 
-  gap: 15px; 
-  margin-top: 15px; 
+/* Botões */
+.btn-primary, .btn-success, .btn-danger {
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
-.cart-summary { 
-  margin-top: 20px; 
-  padding: 15px; 
-  background: #fff; 
-  border-radius: 8px; 
+.btn-primary {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color: #050b14;
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
 }
 
-.auth-box { 
-  background: #fff; 
-  padding: 20px; 
-  border-radius: 8px; 
-  max-width: 400px; 
-  margin: 0 auto; 
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
-.auth-box input { 
-  width: 100%; 
-  padding: 10px; 
-  margin: 8px 0; 
-  border: 1px solid #ccc; 
-  border-radius: 4px; 
+.btn-danger {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
 }
 
-.auth-buttons { 
-  display: flex; 
-  gap: 10px; 
+/* Cards com Efeito Vidro */
+.features, .products-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.auth-buttons button { 
-  flex: 1; 
-  padding: 10px; 
-  border: none; 
-  background: #0f3460; 
-  color: #fff; 
-  border-radius: 4px; 
-  }
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+  color: #38bdf8;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.card p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Loja e Carrinho */
+.cart-summary {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(20, 20, 45, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+}
+
+.cart-summary h3 {
+  color: #f1f5f9;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+/* Form de Autenticação */
+.auth-box {
+  background: rgba(20, 20, 45, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  border-radius: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.auth-box h3 {
+  color: #fff;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 8px 0 16px 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.auth-box input:focus {
+  border-color: #00f2fe;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.auth-buttons button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
