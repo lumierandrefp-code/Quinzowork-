@@ -1,12 +1,22 @@
 {
   "name": "quinzowork",
-  "version": "1.0.0",
-  "description": "Plataforma QUINZOWORK Integrada",
+  "version": "0.1.0",
+  "description": "QUINZOWORK - Plataforma integrada de serviços digitais, freelancers, vagas remotas e conteúdo criativo",
   "main": "index.html",
   "scripts": {
-    "start": "serve ."
+    "start": "npx http-server",
+    "dev": "npx http-server --port 3000",
+    "build": "echo 'Build script will be added with backend integration'"
   },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.0.0"
-  }
+  "keywords": [
+    "freelancer",
+    "remote-jobs",
+    "creators",
+    "digital-services",
+    "platform"
+  ],
+  "author": "QUINZOWORK Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
 }
