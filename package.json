@@ -21,7 +21,9 @@
   ],
   "author": "QUINZOWORK Team",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+  "vite": "^7.1.5"
+},
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0"
   }
