@@ -5,9 +5,11 @@
   "type": "module",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server",
-    "dev": "npx http-server --port 3000",
-    "build": "echo 'Build script will be added with Vite migration'"
+  "start": "vite",
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
+},
   },
   "keywords": [
     "freelancer",
