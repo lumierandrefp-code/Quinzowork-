@@ -10,7 +10,7 @@
   "build": "vite build",
   "preview": "vite preview"
 },
-  },
+
   "keywords": [
     "freelancer",
     "remote-jobs",
