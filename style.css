@@ -260,3 +260,138 @@ body {
 .divider span {
   padding: 0 10px;
 }
+
+.dashboard {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px;
+  background: rgba(20, 20, 45, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+.profile-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profile-heading h3 {
+  margin-top: 5px;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.eyebrow {
+  color: #38bdf8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.profile-logout {
+  width: auto;
+  padding: 9px 14px;
+  font-size: 0.8rem;
+}
+
+.profile-card {
+  display: grid;
+  gap: 1px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.profile-row span {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.profile-row strong {
+  color: #f8fafc;
+  font-size: 0.86rem;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.profile-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.profile-form label {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.profile-form input,
+.profile-form select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.profile-form select option {
+  color: #111827;
+}
+
+.profile-form-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-message {
+  min-height: 20px;
+  margin-top: 14px;
+  color: #6ee7b7;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.profile-message.error {
+  color: #fda4af;
+}
+
+@media (max-width: 440px) {
+  .profile-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .profile-row strong {
+    text-align: left;
+  }
+}

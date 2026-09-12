@@ -78,9 +78,37 @@
     </div>
 
     <div class="dashboard" id="dashboard" style="display:none;">
-      <h3>Área do Cliente</h3>
-      <p id="user-welcome">Você está conectado!</p>
-      <button class="btn-danger" onclick="logout()">Sair</button>
+      <div class="profile-heading">
+        <div>
+          <span class="eyebrow">CONTA AUTENTICADA</span>
+          <h3>Meu Perfil</h3>
+        </div>
+        <button class="btn-danger profile-logout" onclick="logout()">Sair</button>
+      </div>
+      <div class="profile-card">
+        <div class="profile-row"><span>E-mail da conta</span><strong id="profile-email"></strong></div>
+        <div class="profile-row"><span>Nome completo</span><strong id="profile-name">Ainda não informado</strong></div>
+        <div class="profile-row"><span>Tipo de utilizador</span><strong id="profile-role">Ainda não informado</strong></div>
+      </div>
+      <button class="btn-primary" onclick="toggleProfileEditor()">Editar Perfil</button>
+      <form id="profile-form" class="profile-form" hidden onsubmit="saveProfile(event)">
+        <label for="profile-full-name">Nome completo</label>
+        <input id="profile-full-name" type="text" maxlength="120" autocomplete="name" required>
+        <label for="profile-role-select">Tipo de utilizador</label>
+        <select id="profile-role-select" required>
+          <option value="">Selecione uma opção</option>
+          <option value="freelancer">Freelancer</option>
+          <option value="job_seeker">Job Seeker</option>
+          <option value="remote_worker">Remote Worker</option>
+          <option value="creator">Creator</option>
+          <option value="business">Business</option>
+        </select>
+        <div class="profile-form-actions">
+          <button class="btn-success" type="submit">Salvar Perfil</button>
+          <button class="btn-secondary" type="button" onclick="cancelProfileEdit()">Cancelar</button>
+        </div>
+      </form>
+      <p id="profile-message" class="profile-message" role="status" aria-live="polite"></p>
     </div>
   </section>
 
