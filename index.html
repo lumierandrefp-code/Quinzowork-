@@ -126,7 +126,7 @@
       <div class="admin-grid">
         <article class="card admin-card"><h3>Dashboard</h3><p>Visão geral administrativa</p><span>Em preparação</span></article>
         <article class="card admin-card admin-users-card"><h3>Utilizadores</h3><p>Gestão de contas autenticadas</p><button class="btn-primary" type="button" onclick="openAdminUsers()">Abrir Utilizadores</button></article>
-        <article class="card admin-card"><h3>Perfis</h3><p>Consulta de perfis da plataforma</p><span>Em preparação</span></article>
+        <article class="card admin-card admin-profiles-card"><h3>Perfis</h3><p>Consulta de perfis da plataforma</p><button class="btn-primary" type="button" onclick="openAdminProfiles()">Abrir Perfis</button></article>
         <article class="card admin-card"><h3>Estado da plataforma</h3><p>Indicadores operacionais</p><span>Em preparação</span></article>
       </div>
       <section class="admin-users-view" id="admin-users-view" hidden aria-labelledby="admin-users-title">
@@ -147,6 +147,25 @@
           </table>
         </div>
         <div class="admin-users-empty" id="admin-users-empty" hidden>Nenhum utilizador encontrado.</div>
+      </section>
+      <section class="admin-users-view" id="admin-profiles-view" hidden aria-labelledby="admin-profiles-title">
+        <div class="admin-users-heading">
+          <div>
+            <span class="eyebrow">CONSULTA SEGURA</span>
+            <h3 id="admin-profiles-title">Perfis</h3>
+          </div>
+          <button class="btn-secondary admin-users-refresh" id="admin-profiles-refresh" type="button" onclick="loadAdminProfiles()">Atualizar</button>
+        </div>
+        <p class="admin-users-summary"><strong id="admin-profiles-count">0</strong> perfis encontrados</p>
+        <p class="admin-users-message" id="admin-profiles-message" role="status" aria-live="polite"></p>
+        <p class="admin-users-loading" id="admin-profiles-loading" hidden>Carregando perfis...</p>
+        <div class="admin-users-table-wrap">
+          <table class="admin-users-table admin-profiles-table" id="admin-profiles-table">
+            <thead><tr><th>ID do utilizador</th><th>Nome completo</th><th>Tipo de utilizador</th><th>Avatar</th><th>Data de criação</th><th>Última atualização</th></tr></thead>
+            <tbody id="admin-profiles-body"></tbody>
+          </table>
+        </div>
+        <div class="admin-users-empty" id="admin-profiles-empty" hidden>Nenhum perfil encontrado.</div>
       </section>
     </div>
     <div class="admin-denied" id="admin-denied" hidden>

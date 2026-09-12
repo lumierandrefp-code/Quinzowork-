@@ -160,6 +160,63 @@ function openAdminUsers() {
   loadAdminUsers();
 }
 
+function showAdminProfilesMessage(message, isError = false) {
+  const element = document.getElementById('admin-profiles-message');
+  element.innerText = message;
+  element.className = isError ? 'admin-users-message error' : 'admin-users-message';
+}
+
+function renderAdminProfiles(profiles) {
+  const tbody = document.getElementById('admin-profiles-body');
+  const emptyState = document.getElementById('admin-profiles-empty');
+  const table = document.getElementById('admin-profiles-table');
+  document.getElementById('admin-profiles-count').innerText = String(profiles.length);
+  tbody.innerHTML = profiles.map(profile => `
+    <tr>
+      <td data-label="ID do utilizador"><code>${escapeHtml(profile.user_id || 'Não informado')}</code></td>
+      <td data-label="Nome completo">${escapeHtml(profile.full_name || 'Não informado')}</td>
+      <td data-label="Tipo de utilizador">${escapeHtml(ROLE_LABELS[profile.user_type] || 'Não informado')}</td>
+      <td data-label="Avatar">${profile.avatar_url ? '<span class="status-active">Disponível</span>' : 'Não informado'}</td>
+      <td data-label="Data de criação">${escapeHtml(formatAdminDate(profile.created_at))}</td>
+      <td data-label="Última atualização">${escapeHtml(formatAdminDate(profile.updated_at))}</td>
+    </tr>
+  `).join('');
+  table.hidden = profiles.length === 0;
+  emptyState.hidden = profiles.length !== 0;
+}
+
+async function loadAdminProfiles() {
+  const allowed = await checkAdminAccess();
+  if (!allowed) {
+    document.getElementById('admin-profiles-view').hidden = true;
+    return;
+  }
+
+  const refreshButton = document.getElementById('admin-profiles-refresh');
+  const loading = document.getElementById('admin-profiles-loading');
+  refreshButton.disabled = true;
+  loading.hidden = false;
+  showAdminProfilesMessage('');
+
+  const { data, error } = await supabaseClient.rpc('admin_list_profiles');
+  refreshButton.disabled = false;
+  loading.hidden = true;
+
+  if (error) {
+    renderAdminProfiles([]);
+    showAdminProfilesMessage(`Não foi possível carregar os perfis: ${error.message}`, true);
+    return;
+  }
+
+  renderAdminProfiles(Array.isArray(data) ? data : []);
+  showAdminProfilesMessage('Perfis carregados com segurança.');
+}
+
+function openAdminProfiles() {
+  document.getElementById('admin-profiles-view').hidden = false;
+  loadAdminProfiles();
+}
+
 function updateAuthInterface(session) {
   const isAuthenticated = Boolean(session?.user);
   currentSession = session;
