@@ -88,6 +88,78 @@ async function checkAdminAccess() {
   return isCurrentUserAdmin;
 }
 
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '\"': '&quot;'
+  }[character]));
+}
+
+function formatAdminDate(value) {
+  if (!value) return 'Não informado';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Não informado' : date.toLocaleDateString('pt-BR');
+}
+
+function showAdminUsersMessage(message, isError = false) {
+  const element = document.getElementById('admin-users-message');
+  element.innerText = message;
+  element.className = isError ? 'admin-users-message error' : 'admin-users-message';
+}
+
+function renderAdminUsers(users) {
+  const tbody = document.getElementById('admin-users-body');
+  const emptyState = document.getElementById('admin-users-empty');
+  const table = document.getElementById('admin-users-table');
+  document.getElementById('admin-users-count').innerText = String(users.length);
+  tbody.innerHTML = users.map(user => `
+    <tr>
+      <td data-label="Nome">${escapeHtml(user.full_name || 'Não informado')}</td>
+      <td data-label="Email">${escapeHtml(user.email || 'Não informado')}</td>
+      <td data-label="Tipo de utilizador">${escapeHtml(ROLE_LABELS[user.user_type] || 'Não informado')}</td>
+      <td data-label="Data de criação">${escapeHtml(formatAdminDate(user.created_at))}</td>
+      <td data-label="Estado"><span class="status-active">Ativo</span></td>
+    </tr>
+  `).join('');
+  table.hidden = users.length === 0;
+  emptyState.hidden = users.length !== 0;
+}
+
+async function loadAdminUsers() {
+  const allowed = await checkAdminAccess();
+  if (!allowed) {
+    document.getElementById('admin-users-view').hidden = true;
+    return;
+  }
+
+  const refreshButton = document.getElementById('admin-users-refresh');
+  const loading = document.getElementById('admin-users-loading');
+  refreshButton.disabled = true;
+  loading.hidden = false;
+  showAdminUsersMessage('');
+
+  const { data, error } = await supabaseClient.rpc('admin_list_users');
+  refreshButton.disabled = false;
+  loading.hidden = true;
+
+  if (error) {
+    renderAdminUsers([]);
+    showAdminUsersMessage(`Não foi possível carregar os utilizadores: ${error.message}`, true);
+    return;
+  }
+
+  renderAdminUsers(Array.isArray(data) ? data : []);
+  showAdminUsersMessage('Utilizadores carregados com segurança.');
+}
+
+function openAdminUsers() {
+  document.getElementById('admin-users-view').hidden = false;
+  loadAdminUsers();
+}
+
 function updateAuthInterface(session) {
   const isAuthenticated = Boolean(session?.user);
   currentSession = session;

@@ -125,10 +125,29 @@
       </div>
       <div class="admin-grid">
         <article class="card admin-card"><h3>Dashboard</h3><p>Visão geral administrativa</p><span>Em preparação</span></article>
-        <article class="card admin-card"><h3>Utilizadores</h3><p>Gestão de contas autenticadas</p><span>Em preparação</span></article>
+        <article class="card admin-card admin-users-card"><h3>Utilizadores</h3><p>Gestão de contas autenticadas</p><button class="btn-primary" type="button" onclick="openAdminUsers()">Abrir Utilizadores</button></article>
         <article class="card admin-card"><h3>Perfis</h3><p>Consulta de perfis da plataforma</p><span>Em preparação</span></article>
         <article class="card admin-card"><h3>Estado da plataforma</h3><p>Indicadores operacionais</p><span>Em preparação</span></article>
       </div>
+      <section class="admin-users-view" id="admin-users-view" hidden aria-labelledby="admin-users-title">
+        <div class="admin-users-heading">
+          <div>
+            <span class="eyebrow">CONSULTA SEGURA</span>
+            <h3 id="admin-users-title">Utilizadores</h3>
+          </div>
+          <button class="btn-secondary admin-users-refresh" id="admin-users-refresh" type="button" onclick="loadAdminUsers()">Atualizar</button>
+        </div>
+        <p class="admin-users-summary"><strong id="admin-users-count">0</strong> utilizadores encontrados</p>
+        <p class="admin-users-message" id="admin-users-message" role="status" aria-live="polite"></p>
+        <p class="admin-users-loading" id="admin-users-loading" hidden>Carregando utilizadores...</p>
+        <div class="admin-users-table-wrap">
+          <table class="admin-users-table" id="admin-users-table">
+            <thead><tr><th>Nome</th><th>Email</th><th>Tipo de utilizador</th><th>Data de criação</th><th>Estado</th></tr></thead>
+            <tbody id="admin-users-body"></tbody>
+          </table>
+        </div>
+        <div class="admin-users-empty" id="admin-users-empty" hidden>Nenhum utilizador encontrado.</div>
+      </section>
     </div>
     <div class="admin-denied" id="admin-denied" hidden>
       <h2>Área restrita</h2>
