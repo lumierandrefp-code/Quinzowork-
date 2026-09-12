@@ -407,9 +407,71 @@ function setProfileForm(profile) {
   renderProfileSkills(profileFormSkills);
 }
 
+const PROFILE_SKILL_CATEGORIES = {
+  'Tecnologia': ['Desenvolvimento Web', 'Desenvolvimento Front-end', 'Desenvolvimento Back-end', 'Desenvolvimento Full Stack', 'Desenvolvimento Mobile', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js', 'Python', 'PHP', 'Java', 'C#', 'SQL', 'Banco de Dados', 'APIs', 'WordPress', 'Suporte Técnico', 'Redes de Computadores', 'Cibersegurança'],
+  'Design': ['Design Gráfico', 'UI/UX Design', 'Web Design', 'Canva', 'Photoshop', 'Illustrator', 'Figma', 'Edição de Vídeo', 'Animação', 'Fotografia'],
+  'Marketing': ['Marketing Digital', 'Marketing de Conteúdo', 'Redes Sociais', 'Social Media', 'SEO', 'Google Ads', 'Facebook Ads', 'Copywriting', 'Email Marketing', 'Branding'],
+  'Negócios': ['Vendas', 'Atendimento ao Cliente', 'Negociação', 'Gestão de Projetos', 'Gestão de Negócios', 'Consultoria', 'Empreendedorismo', 'Recursos Humanos', 'Recrutamento', 'Administração'],
+  'Serviços': ['Assistência Virtual', 'Assistência Administrativa', 'Recepção', 'Digitação', 'Pesquisa Online', 'Entrada de Dados', 'Transcrição', 'Organização de Documentos'],
+  'Idiomas': ['Português', 'Inglês', 'Francês', 'Espanhol', 'Tradução', 'Interpretação'],
+  'Educação': ['Ensino', 'Tutoria', 'Formação Profissional', 'Matemática', 'Ciências', 'Língua Portuguesa', 'Língua Inglesa'],
+  'Criatividade e Conteúdo': ['Criação de Conteúdo', 'Redação', 'Blog', 'Roteiros', 'YouTube', 'TikTok', 'Podcast', 'Storytelling']
+};
+
+function allProfileSkills() {
+  return Object.entries(PROFILE_SKILL_CATEGORIES).flatMap(([category, skills]) => skills.map(skill => ({ category, skill })));
+}
+
 function renderProfileSkills(skills) {
   const container = document.getElementById('profile-skills-editor');
+  const empty = document.getElementById('profile-skills-empty');
   container.innerHTML = skills.map((skill, index) => `<span class="skill-chip">${escapeHtml(skill)}<button type="button" aria-label="Remover ${escapeHtml(skill)}" onclick="removeProfileSkill(${index})">×</button></span>`).join('');
+  empty.hidden = skills.length > 0;
+  renderSkillOptions();
+}
+
+function renderSkillOptions(query = '') {
+  const container = document.getElementById('profile-skill-options');
+  if (!container) return;
+  const normalizedQuery = query.trim().toLowerCase();
+  const selected = new Set(profileFormSkills.map(skill => skill.toLowerCase()));
+  const matches = allProfileSkills().filter(({ skill }) => !normalizedQuery || skill.toLowerCase().includes(normalizedQuery));
+  const groups = Object.keys(PROFILE_SKILL_CATEGORIES).map(category => {
+    const options = matches.filter(item => item.category === category);
+    if (!options.length) return '';
+    return `<div class="skill-category"><h5>${category}</h5>${options.map(({ skill }) => `<button type="button" class="skill-option ${selected.has(skill.toLowerCase()) ? 'selected' : ''}" onclick="toggleProfileSkill('${skill.replace(/'/g, "\\'")}')"><span>${escapeHtml(skill)}</span><span aria-hidden="true">${selected.has(skill.toLowerCase()) ? '✓' : '+'}</span></button>`).join('')}</div>`;
+  }).join('');
+  container.innerHTML = groups || '<p class="form-hint">Nenhuma competência encontrada.</p>';
+}
+
+function filterSkillOptions() {
+  renderSkillOptions(document.getElementById('profile-skill-search').value);
+}
+
+function toggleSkillsPicker(force) {
+  const picker = document.getElementById('profile-skills-picker');
+  const shouldOpen = typeof force === 'boolean' ? force : picker.hidden;
+  picker.hidden = !shouldOpen;
+  if (shouldOpen) {
+    document.getElementById('profile-skill-search').value = '';
+    renderSkillOptions();
+    document.getElementById('profile-skill-search').focus();
+  }
+}
+
+function toggleProfileSkill(skill) {
+  const index = profileFormSkills.findIndex(item => item.toLowerCase() === skill.toLowerCase());
+  if (index >= 0) {
+    profileFormSkills.splice(index, 1);
+  } else if (profileFormSkills.length >= 15) {
+    showProfileMessage('Limite de 15 competências atingido.', true);
+    return;
+  } else {
+    profileFormSkills.push(skill);
+  }
+  renderProfileSkills(profileFormSkills);
+  const query = document.getElementById('profile-skill-search')?.value || '';
+  renderSkillOptions(query);
 }
 
 function addProfileSkill(event) {
