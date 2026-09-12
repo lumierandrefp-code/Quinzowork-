@@ -324,6 +324,12 @@ body {
   gap: 8px;
 }
 
+.profile-avatar-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .profile-avatar-wrap {
   display: grid;
   width: 72px;
