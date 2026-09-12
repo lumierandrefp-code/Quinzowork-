@@ -407,6 +407,38 @@ function setProfileForm(profile) {
   renderProfileSkills(profileFormSkills);
 }
 
+const PROFILE_TITLE_SKILLS = {
+  'Desenvolvedor Web': ['Desenvolvimento Web', 'HTML/CSS', 'JavaScript', 'React', 'Next.js', 'Node.js', 'TypeScript', 'APIs', 'SQL', 'WordPress'],
+  'Desenvolvedor Front-end': ['HTML/CSS', 'JavaScript', 'React', 'Next.js', 'TypeScript', 'UI/UX Design'],
+  'Desenvolvedor Back-end': ['Node.js', 'Python', 'PHP', 'Java', 'APIs', 'SQL', 'Banco de Dados'],
+  'Desenvolvedor Full Stack': ['Desenvolvimento Full Stack', 'JavaScript', 'React', 'Node.js', 'SQL', 'APIs', 'Next.js'],
+  'Desenvolvedor Mobile': ['Desenvolvimento Mobile', 'Flutter', 'React Native', 'Android', 'iOS', 'Java', 'Kotlin'],
+  'Designer Gráfico': ['Design Gráfico', 'Canva', 'Photoshop', 'Illustrator', 'Figma', 'Branding'],
+  'UI/UX Designer': ['UI/UX Design', 'Figma', 'Web Design', 'Prototipagem', 'Design de Interfaces', 'Pesquisa de Usuário'],
+  'Web Designer': ['Web Design', 'HTML/CSS', 'UI/UX Design', 'WordPress', 'Figma', 'Canva'],
+  'Editor de Vídeo': ['Edição de Vídeo', 'CapCut', 'Premiere Pro', 'After Effects', 'Motion Design'],
+  'Criador de Conteúdo': ['Criação de Conteúdo', 'Redes Sociais', 'TikTok', 'YouTube', 'Storytelling', 'Edição de Vídeo'],
+  'Social Media Manager': ['Social Media', 'Redes Sociais', 'Marketing Digital', 'Criação de Conteúdo', 'Copywriting', 'SEO'],
+  'Especialista em Marketing Digital': ['Marketing Digital', 'SEO', 'Google Ads', 'Facebook Ads', 'Redes Sociais', 'Copywriting'],
+  'Especialista em SEO': ['SEO', 'Marketing de Conteúdo', 'Google Analytics', 'Pesquisa de Palavras-chave', 'Copywriting'],
+  Copywriter: ['Copywriting', 'Redação', 'Marketing de Conteúdo', 'Storytelling', 'Email Marketing'],
+  Tradutor: ['Tradução', 'Português', 'Inglês', 'Francês', 'Espanhol', 'Interpretação'],
+  'Assistente Virtual': ['Assistência Virtual', 'Assistência Administrativa', 'Atendimento ao Cliente', 'Digitação', 'Organização de Documentos', 'Entrada de Dados'],
+  'Assistente Administrativo': ['Assistência Administrativa', 'Administração', 'Digitação', 'Excel', 'Organização de Documentos', 'Atendimento ao Cliente'],
+  'Atendente ao Cliente': ['Atendimento ao Cliente', 'Comunicação', 'Vendas', 'Negociação', 'Assistência Virtual'],
+  Recepcionista: ['Recepção', 'Atendimento ao Cliente', 'Comunicação', 'Administração', 'Organização de Documentos'],
+  Vendedor: ['Vendas', 'Atendimento ao Cliente', 'Negociação', 'Marketing Digital', 'Comunicação'],
+  'Consultor de Negócios': ['Consultoria', 'Gestão de Negócios', 'Estratégia', 'Vendas', 'Negociação'],
+  'Gestor de Projetos': ['Gestão de Projetos', 'Gestão de Negócios', 'Liderança', 'Organização', 'Comunicação'],
+  Contabilista: ['Contabilidade', 'Finanças', 'Excel', 'Administração', 'Gestão de Negócios'],
+  'Técnico de Informática': ['Suporte Técnico', 'Redes de Computadores', 'Hardware', 'Software', 'Cibersegurança'],
+  'Analista de Dados': ['Análise de Dados', 'SQL', 'Excel', 'Python', 'Banco de Dados'],
+  'Profissional de Recursos Humanos': ['Recursos Humanos', 'Recrutamento', 'Gestão de Pessoas', 'Administração', 'Comunicação'],
+  Recrutador: ['Recrutamento', 'Recursos Humanos', 'Entrevistas', 'Comunicação', 'Gestão de Pessoas'],
+  Professor: ['Ensino', 'Tutoria', 'Formação Profissional', 'Matemática', 'Língua Portuguesa', 'Língua Inglesa'],
+  Tutor: ['Ensino', 'Tutoria', 'Formação Profissional', 'Matemática', 'Língua Portuguesa', 'Língua Inglesa']
+};
+
 const PROFILE_SKILL_CATEGORIES = {
   'Tecnologia': ['Desenvolvimento Web', 'Desenvolvimento Front-end', 'Desenvolvimento Back-end', 'Desenvolvimento Full Stack', 'Desenvolvimento Mobile', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js', 'Python', 'PHP', 'Java', 'C#', 'SQL', 'Banco de Dados', 'APIs', 'WordPress', 'Suporte Técnico', 'Redes de Computadores', 'Cibersegurança'],
   'Design': ['Design Gráfico', 'UI/UX Design', 'Web Design', 'Canva', 'Photoshop', 'Illustrator', 'Figma', 'Edição de Vídeo', 'Animação', 'Fotografia'],
@@ -419,7 +451,17 @@ const PROFILE_SKILL_CATEGORIES = {
 };
 
 function allProfileSkills() {
-  return Object.entries(PROFILE_SKILL_CATEGORIES).flatMap(([category, skills]) => skills.map(skill => ({ category, skill })));
+  const title = document.getElementById('profile-professional-title')?.value || '';
+  const relevant = PROFILE_TITLE_SKILLS[title] || [];
+  const general = Object.entries(PROFILE_SKILL_CATEGORIES).flatMap(([category, skills]) => skills.map(skill => ({ category, skill })));
+  const ordered = [...relevant.map(skill => ({ category: 'Sugestões para o seu título', skill })), ...general];
+  const seen = new Set();
+  return ordered.filter(item => {
+    const key = item.skill.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function renderProfileSkills(skills) {
@@ -436,7 +478,8 @@ function renderSkillOptions(query = '') {
   const normalizedQuery = query.trim().toLowerCase();
   const selected = new Set(profileFormSkills.map(skill => skill.toLowerCase()));
   const matches = allProfileSkills().filter(({ skill }) => !normalizedQuery || skill.toLowerCase().includes(normalizedQuery));
-  const groups = Object.keys(PROFILE_SKILL_CATEGORIES).map(category => {
+  const categories = [...new Set(matches.map(item => item.category))];
+  const groups = categories.map(category => {
     const options = matches.filter(item => item.category === category);
     if (!options.length) return '';
     return `<div class="skill-category"><h5>${category}</h5>${options.map(({ skill }) => `<button type="button" class="skill-option ${selected.has(skill.toLowerCase()) ? 'selected' : ''}" onclick="toggleProfileSkill('${skill.replace(/'/g, "\\'")}')"><span>${escapeHtml(skill)}</span><span aria-hidden="true">${selected.has(skill.toLowerCase()) ? '✓' : '+'}</span></button>`).join('')}</div>`;
@@ -463,8 +506,8 @@ function toggleProfileSkill(skill) {
   const index = profileFormSkills.findIndex(item => item.toLowerCase() === skill.toLowerCase());
   if (index >= 0) {
     profileFormSkills.splice(index, 1);
-  } else if (profileFormSkills.length >= 15) {
-    showProfileMessage('Limite de 15 competências atingido.', true);
+  } else if (profileFormSkills.length >= 5) {
+    showProfileMessage('Limite de 5 competências atingido.', true);
     return;
   } else {
     profileFormSkills.push(skill);
