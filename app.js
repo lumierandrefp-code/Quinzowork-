@@ -35,41 +35,86 @@ function checkout() {
   alert(cartCount > 0 ? 'Pedido iniciado! Redirecionando...' : 'Seu carrinho está vazio.');
 }
 
-// Autenticação (E-mail e Senha)
-function login() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+// Autenticação real com Supabase Auth.
+const SUPABASE_URL = 'https://qazdbifnosykdgjufjtc.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_IYc8bf1pe2wNG7o4l-Q97Q_hm5-vEBx';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-  if (email && password) {
-    document.getElementById('auth-box').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('user-welcome').innerText = `Bem-vindo, ${email}!`;
-  } else {
-    alert('Preencha o e-mail e a senha para entrar.');
+function showAuthMessage(message, isError = false) {
+  const element = document.getElementById('auth-message');
+  element.innerText = message;
+  element.className = isError ? 'auth-message error' : 'auth-message';
+}
+
+function updateAuthInterface(session) {
+  const isAuthenticated = Boolean(session?.user);
+  document.getElementById('auth-box').style.display = isAuthenticated ? 'none' : 'block';
+  document.getElementById('dashboard').style.display = isAuthenticated ? 'block' : 'none';
+
+  if (isAuthenticated) {
+    document.getElementById('user-welcome').innerText = `Bem-vindo, ${session.user.email}!`;
   }
 }
 
-// Autenticação (Google)
-function loginWithGoogle() {
-  document.getElementById('auth-box').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('user-welcome').innerText = 'Conectado com sucesso via Conta Google!';
-}
-
-function register() {
-  const email = document.getElementById('email').value;
+async function login() {
+  const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  if (email && password) {
-    alert('Cadastro realizado com sucesso! Faça login para entrar.');
-  } else {
-    alert('Preencha os campos para se cadastrar.');
+  if (!email || !password) {
+    showAuthMessage('Preencha o e-mail e a senha para entrar.', true);
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) showAuthMessage(error.message, true);
+}
+
+async function loginWithGoogle() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin }
+  });
+
+  if (error) showAuthMessage(error.message, true);
+}
+
+async function register() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    showAuthMessage('Preencha o e-mail e a senha para se cadastrar.', true);
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp({ email, password });
+  if (error) {
+    showAuthMessage(error.message, true);
+  } else if (!data.session) {
+    showAuthMessage('Cadastro realizado. Confirme seu e-mail para ativar a conta.');
   }
 }
 
-function logout() {
-  document.getElementById('auth-box').style.display = 'block';
-  document.getElementById('dashboard').style.display = 'none';
+async function logout() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) showAuthMessage(error.message, true);
 }
 
-document.addEventListener('DOMContentLoaded', loadProducts);
+async function initializeAuth() {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    showAuthMessage(error.message, true);
+    updateAuthInterface(null);
+    return;
+  }
+
+  updateAuthInterface(data.session);
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    updateAuthInterface(session);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+  initializeAuth();
+});
