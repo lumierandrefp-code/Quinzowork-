@@ -113,6 +113,13 @@ function toggleProfileEditor() {
   showProfileMessage('');
 }
 
+function cancelProfileEdit() {
+  const form = document.getElementById('profile-form');
+  form.hidden = true;
+  setProfileForm(currentProfile);
+  showProfileMessage('');
+}
+
 async function saveProfile(event) {
   event.preventDefault();
   if (!currentSession?.user) return;

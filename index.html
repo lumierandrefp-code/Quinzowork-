@@ -103,7 +103,10 @@
           <option value="creator">Creator</option>
           <option value="business">Business</option>
         </select>
-        <button class="btn-success" type="submit">Salvar Perfil</button>
+        <div class="profile-form-actions">
+          <button class="btn-success" type="submit">Salvar Perfil</button>
+          <button class="btn-secondary" type="button" onclick="cancelProfileEdit()">Cancelar</button>
+        </div>
       </form>
       <p id="profile-message" class="profile-message" role="status" aria-live="polite"></p>
     </div>
