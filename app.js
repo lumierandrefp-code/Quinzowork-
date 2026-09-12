@@ -449,11 +449,20 @@ async function loadProfile(session) {
   updateAuthInterface(session);
 }
 
-function toggleProfileEditor() {
+async function toggleProfileEditor() {
   const form = document.getElementById('profile-form');
   const editing = form.hidden;
-  form.hidden = !editing;
-  if (editing) setProfileForm(currentProfile);
+  if (!editing) {
+    form.hidden = true;
+    setProfileForm(currentProfile);
+    showProfileMessage('');
+    return;
+  }
+
+  form.hidden = false;
+  showProfileMessage('Carregando perfil...');
+  await loadProfile(currentSession);
+  setProfileForm(currentProfile);
   showProfileMessage('');
 }
 
@@ -471,7 +480,8 @@ async function saveProfile(event) {
   const fullName = document.getElementById('profile-full-name').value.trim();
   const role = document.getElementById('profile-role-select').value;
   const hourlyRateValue = document.getElementById('profile-hourly-rate').value.trim();
-  if (!fullName || !role) {
+  const allowedRoles = ['freelancer', 'job_seeker', 'remote_worker', 'creator', 'business'];
+  if (!fullName || !allowedRoles.includes(role)) {
     showProfileMessage('Informe o nome completo e o tipo de utilizador.', true);
     return;
   }
