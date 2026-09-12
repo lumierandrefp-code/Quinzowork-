@@ -493,6 +493,10 @@ body {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
+.skills-picker[hidden] {
+  display: none;
+}
+
 .skills-picker input {
   margin: 0;
 }
