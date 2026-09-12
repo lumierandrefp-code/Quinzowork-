@@ -491,15 +491,30 @@ function filterSkillOptions() {
   renderSkillOptions(document.getElementById('profile-skill-search').value);
 }
 
+function closeSkillsSelector() {
+  const picker = document.getElementById('profile-skills-picker');
+  if (!picker) return;
+  picker.hidden = true;
+  picker.setAttribute('hidden', 'hidden');
+  picker.setAttribute('aria-hidden', 'true');
+  picker.style.display = 'none';
+}
+
 function toggleSkillsPicker(force) {
   const picker = document.getElementById('profile-skills-picker');
+  if (!picker) return;
   const shouldOpen = typeof force === 'boolean' ? force : picker.hidden;
-  picker.hidden = !shouldOpen;
-  if (shouldOpen) {
-    document.getElementById('profile-skill-search').value = '';
-    renderSkillOptions();
-    document.getElementById('profile-skill-search').focus();
+  if (!shouldOpen) {
+  closeSkillsSelector();
+  return;
   }
+  picker.hidden = false;
+  picker.removeAttribute('hidden');
+  picker.setAttribute('aria-hidden', 'false');
+  picker.style.display = '';
+  document.getElementById('profile-skill-search').value = '';
+  renderSkillOptions();
+  document.getElementById('profile-skill-search').focus();
 }
 
 function toggleProfileSkill(skill) {
@@ -580,7 +595,7 @@ async function toggleProfileEditor() {
 function closeProfileEditor() {
   const form = document.getElementById('profile-form');
   form.hidden = true;
-  document.getElementById('profile-skills-picker')?.setAttribute('hidden', '');
+  closeSkillsSelector();
 }
 
 function cancelProfileEdit() {
