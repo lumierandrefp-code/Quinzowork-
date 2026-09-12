@@ -112,6 +112,236 @@ function openCurrentUserPublicProfile() {
   openPublicProfile(currentSession.user.id);
 }
 
+const JOB_OFFER_FIELDS = 'id, user_id, title, description, category, skills, work_type, location, budget, payment_type, experience_level, status, created_at, updated_at';
+let jobOffers = [];
+let jobProfiles = {};
+let selectedJobOffer = null;
+
+function jobValue(value) {
+  return value === null || value === undefined || value === '' ? 'Não informado' : String(value);
+}
+
+function jobSkills(value) {
+  if (Array.isArray(value)) return value.filter(Boolean).slice(0, 5);
+  return String(value || '').split(',').map(skill => skill.trim()).filter(Boolean).slice(0, 5);
+}
+
+function formatJobDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Data não informada' : date.toLocaleDateString('pt-BR');
+}
+
+function formatJobBudget(value, paymentType) {
+  if (value === null || value === undefined || value === '') return 'Orçamento não informado';
+  return `KZ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ${paymentType ? `/ ${paymentType.toLowerCase()}` : ''}`;
+}
+
+function showJobsMessage(message, isError = false) {
+  const element = document.getElementById('jobs-message');
+  element.innerText = message;
+  element.className = isError ? 'jobs-message error' : 'jobs-message';
+}
+
+async function loadJobProfiles(offers) {
+  const ids = [...new Set(offers.map(offer => offer.user_id).filter(Boolean))];
+  if (!ids.length) return;
+  const { data } = await supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', ids);
+  jobProfiles = Object.fromEntries((data || []).map(profile => [profile.id, profile]));
+}
+
+function renderJobOffers(offers) {
+  const list = document.getElementById('jobs-list');
+  const empty = document.getElementById('jobs-empty');
+  list.innerHTML = offers.map(offer => {
+    const profile = jobProfiles[offer.user_id] || {};
+    const skills = jobSkills(offer.skills);
+    return `<article class="job-card card"><div class="job-card-heading"><div><span class="job-card-category">${escapeHtml(jobValue(offer.category))}</span><h3>${escapeHtml(jobValue(offer.title))}</h3></div><span class="job-status ${offer.status === 'open' ? '' : 'closed'}">${offer.status === 'open' ? 'Aberta' : 'Encerrada'}</span></div><p class="job-description">${escapeHtml(jobValue(offer.description).slice(0, 180))}${String(offer.description || '').length > 180 ? '...' : ''}</p><div class="job-meta"><span>${escapeHtml(jobValue(offer.work_type))}</span><span>${escapeHtml(jobValue(offer.location))}</span><span>${escapeHtml(formatJobBudget(offer.budget, offer.payment_type))}</span><span>${escapeHtml(jobValue(offer.experience_level))}</span></div><div class="job-skills">${skills.map(skill => `<span>${escapeHtml(skill)}</span>`).join('') || '<span>Sem competências</span>'}</div><div class="job-card-footer"><div class="job-publisher"><div class="job-avatar">${profile.avatar_url ? `<img src="${escapeHtml(profile.avatar_url)}" alt="">` : 'Foto'}</div><span>${escapeHtml(profile.full_name || 'Anunciante')}</span></div><small>${escapeHtml(formatJobDate(offer.created_at))}</small></div><button class="btn-primary" type="button" onclick="openJobOfferDetail('${escapeHtml(offer.id)}')">Ver detalhes</button></article>`;
+  }).join('');
+  list.hidden = offers.length === 0;
+  empty.hidden = offers.length !== 0;
+}
+
+function filterJobOffers() {
+  const query = document.getElementById('jobs-search').value.trim().toLowerCase();
+  const category = document.getElementById('jobs-category').value;
+  const workType = document.getElementById('jobs-work-type').value;
+  const experience = document.getElementById('jobs-experience').value;
+  const payment = document.getElementById('jobs-payment').value;
+  const filtered = jobOffers.filter(offer => {
+    const searchable = [offer.title, offer.description, offer.category, ...jobSkills(offer.skills)].join(' ').toLowerCase();
+    return (!query || searchable.includes(query)) && (!category || offer.category === category) && (!workType || offer.work_type === workType) && (!experience || offer.experience_level === experience) && (!payment || offer.payment_type === payment);
+  });
+  renderJobOffers(filtered);
+}
+
+async function loadJobOffers() {
+  const loading = document.getElementById('jobs-loading');
+  loading.hidden = false;
+  showJobsMessage('');
+  const { data, error } = await supabaseClient.from('job_offers').select(JOB_OFFER_FIELDS).eq('status', 'open').order('created_at', { ascending: false });
+  loading.hidden = true;
+  if (error) {
+    jobOffers = [];
+    renderJobOffers([]);
+    showJobsMessage('Não foi possível carregar as ofertas de trabalho.', true);
+    return;
+  }
+  jobOffers = data || [];
+  await loadJobProfiles(jobOffers);
+  filterJobOffers();
+}
+
+async function loadMyJobOffers() {
+  if (!currentSession?.user) {
+    showJobsMessage('Entre na sua conta para ver as suas ofertas.', true);
+    navigate('sistema');
+    return;
+  }
+  navigate('job-offers');
+  document.getElementById('jobs-loading').hidden = false;
+  const { data, error } = await supabaseClient.from('job_offers').select(JOB_OFFER_FIELDS).eq('user_id', currentSession.user.id).order('created_at', { ascending: false });
+  document.getElementById('jobs-loading').hidden = true;
+  if (error) {
+    renderJobOffers([]);
+    showJobsMessage('Não foi possível carregar as suas ofertas.', true);
+    return;
+  }
+  jobOffers = data || [];
+  await loadJobProfiles(jobOffers);
+  filterJobOffers();
+  showJobsMessage('A mostrar as suas ofertas, incluindo as encerradas.');
+}
+
+function openJobOffers() {
+  navigate('job-offers');
+  document.getElementById('job-offer-detail').hidden = true;
+  document.getElementById('jobs-list').hidden = false;
+  if (currentSession?.user) document.querySelector('.jobs-publish-button').disabled = false;
+  else document.querySelector('.jobs-publish-button').disabled = true;
+  loadJobOffers();
+}
+
+function resetJobOfferForm() {
+  document.getElementById('job-offer-form').reset();
+  document.getElementById('job-offer-id').value = '';
+  document.getElementById('job-form-title').innerText = 'Publicar oferta';
+}
+
+function openJobOfferForm(offer = null) {
+  if (!currentSession?.user) {
+    showJobsMessage('Entre na sua conta para publicar uma oferta.', true);
+    navigate('sistema');
+    return;
+  }
+  resetJobOfferForm();
+  if (offer) {
+    document.getElementById('job-form-title').innerText = 'Editar oferta';
+    document.getElementById('job-offer-id').value = offer.id;
+    document.getElementById('job-title').value = offer.title || '';
+    document.getElementById('job-description').value = offer.description || '';
+    document.getElementById('job-category-form').value = offer.category || '';
+    document.getElementById('job-work-type-form').value = offer.work_type || '';
+    document.getElementById('job-experience-form').value = offer.experience_level || '';
+    document.getElementById('job-payment-form').value = offer.payment_type || '';
+    document.getElementById('job-budget').value = offer.budget ?? '';
+    document.getElementById('job-location').value = offer.location || '';
+    document.getElementById('job-skills').value = jobSkills(offer.skills).join(', ');
+  }
+  document.getElementById('job-offer-form').hidden = false;
+  document.getElementById('job-offer-detail').hidden = true;
+  document.getElementById('job-offer-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeJobOfferForm() {
+  document.getElementById('job-offer-form').hidden = true;
+}
+
+async function saveJobOffer(event) {
+  event.preventDefault();
+  if (!currentSession?.user) return showJobsMessage('Entre na sua conta para guardar uma oferta.', true);
+  const title = document.getElementById('job-title').value.trim();
+  const description = document.getElementById('job-description').value.trim();
+  const category = document.getElementById('job-category-form').value;
+  const workType = document.getElementById('job-work-type-form').value;
+  const experience = document.getElementById('job-experience-form').value;
+  const payment = document.getElementById('job-payment-form').value;
+  const budget = Number(document.getElementById('job-budget').value);
+  const location = document.getElementById('job-location').value.trim();
+  const skills = jobSkills(document.getElementById('job-skills').value);
+  if (!title || !description || !category || !workType || !experience || !payment || !Number.isFinite(budget) || budget < 0 || skills.length > 5 || ((workType === 'Presencial' || workType === 'Híbrido') && !location)) {
+    showJobsMessage('Preencha os campos obrigatórios. Use um orçamento válido e até 5 competências.', true);
+    return;
+  }
+  const button = document.getElementById('job-save-button');
+  button.disabled = true;
+  const id = document.getElementById('job-offer-id').value;
+  const payload = { title, description, category, skills, work_type: workType, location, budget, payment_type: payment, experience_level: experience, status: id ? undefined : 'open', updated_at: new Date().toISOString() };
+  Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+  const request = id ? supabaseClient.from('job_offers').update(payload).eq('id', id).eq('user_id', currentSession.user.id).select(JOB_OFFER_FIELDS).single() : supabaseClient.from('job_offers').insert({ ...payload, user_id: currentSession.user.id }).select(JOB_OFFER_FIELDS).single();
+  const { data, error } = await request;
+  button.disabled = false;
+  if (error) {
+    showJobsMessage('Não foi possível guardar a oferta. Verifique os dados e tente novamente.', true);
+    return;
+  }
+  closeJobOfferForm();
+  showJobsMessage(id ? 'Oferta atualizada com sucesso.' : 'Oferta publicada com sucesso.');
+  if (id) jobOffers = jobOffers.map(offer => offer.id === id ? data : offer);
+  else jobOffers = [data, ...jobOffers];
+  await loadJobProfiles([data]);
+  filterJobOffers();
+}
+
+async function openJobOfferDetail(id) {
+  const detail = document.getElementById('job-offer-detail');
+  detail.hidden = false;
+  detail.innerHTML = '<p>Carregando oferta...</p>';
+  const { data, error } = await supabaseClient.from('job_offers').select(JOB_OFFER_FIELDS).eq('id', id).maybeSingle();
+  if (error || !data) {
+    detail.innerHTML = '<p class="jobs-message error">Oferta não encontrada ou indisponível.</p>';
+    return;
+  }
+  selectedJobOffer = data;
+  await loadJobProfiles([data]);
+  const profile = jobProfiles[data.user_id] || {};
+  const isOwner = currentSession?.user?.id === data.user_id;
+  const skills = jobSkills(data.skills);
+  detail.innerHTML = `<div class="profile-heading"><div><span class="eyebrow">DETALHES DA OFERTA</span><h2>${escapeHtml(jobValue(data.title))}</h2><p>${escapeHtml(jobValue(data.category))} · ${escapeHtml(jobValue(data.work_type))}</p></div><button class="btn-secondary" type="button" onclick="closeJobOfferDetail()">Voltar</button></div><p class="job-detail-description">${escapeHtml(jobValue(data.description))}</p><div class="job-detail-grid"><div><strong>Competências</strong><p>${escapeHtml(skills.join(' · ') || 'Não informado')}</p></div><div><strong>Localização</strong><p>${escapeHtml(jobValue(data.location))}</p></div><div><strong>Remuneração</strong><p>${escapeHtml(formatJobBudget(data.budget, data.payment_type))}</p></div><div><strong>Experiência</strong><p>${escapeHtml(jobValue(data.experience_level))}</p></div><div><strong>Estado</strong><p>${data.status === 'open' ? 'Aberta' : 'Encerrada'}</p></div><div><strong>Publicada em</strong><p>${escapeHtml(formatJobDate(data.created_at))}</p></div></div><div class="job-detail-publisher"><div class="job-avatar">${profile.avatar_url ? `<img src="${escapeHtml(profile.avatar_url)}" alt="">` : 'Foto'}</div><div><strong>${escapeHtml(profile.full_name || 'Anunciante')}</strong><button class="btn-secondary" type="button" onclick="openPublicProfile('${escapeHtml(data.user_id)}')">Ver perfil</button></div></div>${isOwner ? `<div class="job-owner-actions"><button class="btn-primary" type="button" onclick="editSelectedJobOffer()">Editar oferta</button><button class="btn-secondary" type="button" onclick="toggleJobOfferStatus('${escapeHtml(data.id)}','${data.status === 'open' ? 'closed' : 'open'}')">${data.status === 'open' ? 'Encerrar oferta' : 'Reabrir oferta'}</button><button class="btn-danger" type="button" onclick="deleteJobOffer('${escapeHtml(data.id)}')">Eliminar oferta</button></div>` : ''}`;
+  detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function editSelectedJobOffer() {
+  if (selectedJobOffer && currentSession?.user?.id === selectedJobOffer.user_id) openJobOfferForm(selectedJobOffer);
+}
+
+function closeJobOfferDetail() {
+  const detail = document.getElementById('job-offer-detail');
+  detail.hidden = true;
+  detail.innerHTML = '';
+}
+
+async function toggleJobOfferStatus(id, status) {
+  if (!currentSession?.user) return;
+  const { data, error } = await supabaseClient.from('job_offers').update({ status, updated_at: new Date().toISOString() }).eq('id', id).eq('user_id', currentSession.user.id).select(JOB_OFFER_FIELDS).single();
+  if (error) return showJobsMessage('Não foi possível atualizar o estado da oferta.', true);
+  selectedJobOffer = data;
+  jobOffers = jobOffers.filter(offer => offer.id !== id);
+  if (status === 'open') jobOffers.unshift(data);
+  await loadJobProfiles([data]);
+  await openJobOfferDetail(id);
+  filterJobOffers();
+}
+
+async function deleteJobOffer(id) {
+  if (!currentSession?.user || !window.confirm('Eliminar esta oferta?')) return;
+  const { error } = await supabaseClient.from('job_offers').delete().eq('id', id).eq('user_id', currentSession.user.id);
+  if (error) return showJobsMessage('Não foi possível eliminar a oferta.', true);
+  closeJobOfferDetail();
+  jobOffers = jobOffers.filter(offer => offer.id !== id);
+  filterJobOffers();
+  showJobsMessage('Oferta eliminada.');
+}
+
 // Lista de Produtos do QUINZOWORK
 const products = [
   { id: 1, name: 'Serviço de Desenvolvimento Web', price: '2500,00', desc: 'Criação de site completo responsivo.' },

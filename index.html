@@ -15,6 +15,7 @@
     <nav class="nav-links">
       <button type="button" data-page="home" onclick="navigate('home')">Início</button>
       <button type="button" data-page="loja" onclick="navigate('loja')">Loja</button>
+      <button type="button" data-page="job-offers" onclick="openJobOffers()">Ofertas de Trabalho</button>
       <button type="button" data-page="sistema" onclick="navigate('sistema')">Painel</button>
       <button type="button" id="admin-nav" data-page="admin" onclick="navigate('admin')" hidden>Administração</button>
     </nav>
@@ -133,7 +134,38 @@
     </div>
   </section>
 
-  <!-- 5. ADMINISTRAÇÃO PROTEGIDA -->
+  <!-- 5. OFERTAS DE TRABALHO -->
+  <section id="job-offers" class="page">
+    <div class="jobs-shell">
+      <div class="profile-heading">
+        <div><span class="eyebrow">OPORTUNIDADES</span><h2>Ofertas de Trabalho</h2><p class="section-subtitle">Encontre oportunidades profissionais abertas no Quinzowork.</p></div>
+        <div class="jobs-header-actions"><button class="btn-secondary" type="button" onclick="loadMyJobOffers()">Minhas ofertas</button><button class="btn-primary jobs-publish-button" type="button" onclick="openJobOfferForm()">Publicar oferta</button></div>
+      </div>
+      <div class="jobs-toolbar">
+        <input id="jobs-search" type="search" placeholder="Pesquisar por título, descrição ou competência" oninput="filterJobOffers()" aria-label="Pesquisar ofertas">
+        <select id="jobs-category" onchange="filterJobOffers()" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option><option>Tecnologia</option><option>Design</option><option>Marketing</option><option>Vendas</option><option>Atendimento</option><option>Administração</option><option>Engenharia</option><option>Construção</option><option>Educação</option><option>Tradução</option><option>Finanças</option><option>Saúde</option><option>Outros</option></select>
+        <select id="jobs-work-type" onchange="filterJobOffers()" aria-label="Filtrar por tipo de trabalho"><option value="">Todos os formatos</option><option value="Remoto">Remoto</option><option value="Presencial">Presencial</option><option value="Híbrido">Híbrido</option></select>
+        <select id="jobs-experience" onchange="filterJobOffers()" aria-label="Filtrar por experiência"><option value="">Toda experiência</option><option>Sem experiência</option><option>Júnior</option><option>Pleno</option><option>Sénior</option></select>
+        <select id="jobs-payment" onchange="filterJobOffers()" aria-label="Filtrar por pagamento"><option value="">Todos os pagamentos</option><option>Por hora</option><option>Por projeto</option><option>Salário mensal</option></select>
+      </div>
+      <p id="jobs-message" class="jobs-message" role="status" aria-live="polite"></p>
+      <p id="jobs-loading" class="jobs-loading">Carregando ofertas...</p>
+      <div id="jobs-list" class="jobs-list"></div>
+      <div id="jobs-empty" class="jobs-empty" hidden>Nenhuma oferta aberta encontrada.</div>
+      <form id="job-offer-form" class="job-offer-form card" hidden onsubmit="saveJobOffer(event)">
+        <div class="profile-heading"><div><span class="eyebrow">NOVA OPORTUNIDADE</span><h3 id="job-form-title">Publicar oferta</h3></div><button class="btn-secondary" type="button" onclick="closeJobOfferForm()">Cancelar</button></div>
+        <input id="job-offer-id" type="hidden">
+        <label for="job-title">Título</label><input id="job-title" type="text" maxlength="160" required>
+        <label for="job-description">Descrição</label><textarea id="job-description" rows="6" maxlength="5000" required></textarea>
+        <div class="job-form-grid"><div><label for="job-category">Categoria</label><select id="job-category-form" required><option value="">Selecione</option><option>Tecnologia</option><option>Design</option><option>Marketing</option><option>Vendas</option><option>Atendimento</option><option>Administração</option><option>Engenharia</option><option>Construção</option><option>Educação</option><option>Tradução</option><option>Finanças</option><option>Saúde</option><option>Outros</option></select></div><div><label for="job-work-type">Tipo de trabalho</label><select id="job-work-type-form" required><option value="">Selecione</option><option>Remoto</option><option>Presencial</option><option>Híbrido</option></select></div><div><label for="job-experience">Experiência</label><select id="job-experience-form" required><option value="">Selecione</option><option>Sem experiência</option><option>Júnior</option><option>Pleno</option><option>Sénior</option></select></div><div><label for="job-payment">Tipo de remuneração</label><select id="job-payment-form" required><option value="">Selecione</option><option>Por hora</option><option>Por projeto</option><option>Salário mensal</option></select></div><div><label for="job-budget">Orçamento / salário</label><input id="job-budget" type="number" min="0" step="0.01" required></div><div><label for="job-location">Localização</label><input id="job-location" type="text" maxlength="160" placeholder="Ex.: Luanda ou remoto"></div></div>
+        <label for="job-skills">Competências</label><input id="job-skills" type="text" maxlength="300" placeholder="Ex.: React, Design, Excel (separadas por vírgula)"><p class="form-hint">Use até 5 competências.</p>
+        <div class="profile-form-actions"><button class="btn-success" id="job-save-button" type="submit">Guardar oferta</button><button class="btn-secondary" type="button" onclick="closeJobOfferForm()">Cancelar</button></div>
+      </form>
+      <article id="job-offer-detail" class="job-offer-detail card" hidden></article>
+    </div>
+  </section>
+
+  <!-- 6. ADMINISTRAÇÃO PROTEGIDA -->
   <section id="admin" class="page">
     <div class="admin-panel" id="admin-panel" hidden>
       <div class="profile-heading">
