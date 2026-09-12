@@ -1031,6 +1031,25 @@ body {
 .job-offer-form, .job-offer-detail { margin-top: 20px; display: grid; gap: 12px; }
 .job-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .job-form-grid > div { display: grid; gap: 8px; }
+.job-skills-input-wrap {
+  position: relative;
+}
+
+.job-skills-input-wrap input {
+  padding-right: 38px;
+}
+
+.job-select-indicator {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
 .job-detail-grid > div { flex: 1 1 220px; padding: 14px; border-radius: 12px; background: rgba(255,255,255,.04); }
 .job-detail-grid strong { color: #67e8f9; font-size: .8rem; }
 .job-detail-grid p { margin-top: 6px; color: #cbd5e1; }
