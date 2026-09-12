@@ -86,28 +86,20 @@
         </div>
         <button class="btn-danger profile-logout" onclick="logout()">Sair</button>
       </div>
-      <div class="profile-card">
-        <div class="profile-row"><span>E-mail da conta</span><strong id="profile-email"></strong></div>
-        <div class="profile-row"><span>Nome completo</span><strong id="profile-name">Ainda não informado</strong></div>
-        <div class="profile-row"><span>Tipo de utilizador</span><strong id="profile-role">Ainda não informado</strong></div>
+      <div class="profile-hero-card">
+        <div class="profile-avatar-wrap"><img id="profile-avatar" class="profile-avatar" alt="Foto de perfil" hidden></div>
+        <div><span class="eyebrow">PERFIL PROFISSIONAL</span><h3 id="profile-name">Ainda não informado</h3><p id="profile-display-title">Ainda não informado</p><span class="profile-role-badge" id="profile-role">Ainda não informado</span></div>
       </div>
       <button class="btn-primary" onclick="toggleProfileEditor()">Editar Perfil</button>
+      <div class="profile-display-grid">
+        <section class="profile-section"><h4>Informações profissionais</h4><div class="profile-detail"><span>Biografia</span><p id="profile-display-bio">Ainda não informado</p></div><div class="profile-detail"><span>Competências</span><p id="profile-display-skills">Ainda não informado</p></div><div class="profile-detail"><span>Experiência</span><p id="profile-display-experience">Ainda não informado</p></div><div class="profile-detail"><span>Formação</span><p id="profile-display-education">Ainda não informado</p></div><div class="profile-detail"><span>Disponibilidade</span><p id="profile-display-availability">Ainda não informado</p></div><div class="profile-detail"><span>Valor por hora</span><p id="profile-display-hourly-rate">Ainda não informado</p></div></section>
+        <section class="profile-section"><h4>Contactos e presença online</h4><div class="profile-detail"><span>E-mail da conta</span><p id="profile-email"></p></div><div class="profile-detail"><span>Localização</span><p id="profile-display-location">Ainda não informado</p></div><div class="profile-detail"><span>Telefone</span><p id="profile-display-phone">Ainda não informado</p></div><div class="profile-detail"><span>Website / Portfólio</span><p id="profile-display-website">Ainda não informado</p></div><div class="profile-detail"><span>LinkedIn</span><p id="profile-display-linkedin">Ainda não informado</p></div></section>
+      </div>
       <form id="profile-form" class="profile-form" hidden onsubmit="saveProfile(event)">
-        <label for="profile-full-name">Nome completo</label>
-        <input id="profile-full-name" type="text" maxlength="120" autocomplete="name" required>
-        <label for="profile-role-select">Tipo de utilizador</label>
-        <select id="profile-role-select" required>
-          <option value="">Selecione uma opção</option>
-          <option value="freelancer">Freelancer</option>
-          <option value="job_seeker">Job Seeker</option>
-          <option value="remote_worker">Remote Worker</option>
-          <option value="creator">Creator</option>
-          <option value="business">Business</option>
-        </select>
-        <div class="profile-form-actions">
-          <button class="btn-success" type="submit">Salvar Perfil</button>
-          <button class="btn-secondary" type="button" onclick="cancelProfileEdit()">Cancelar</button>
-        </div>
+        <div class="profile-form-section"><h4>Informações pessoais</h4><label for="profile-full-name">Nome completo</label><input id="profile-full-name" type="text" maxlength="120" autocomplete="name" required><label for="profile-role-select">Tipo de utilizador</label><select id="profile-role-select" required><option value="">Selecione uma opção</option><option value="freelancer">Freelancer</option><option value="job_seeker">Job Seeker</option><option value="remote_worker">Remote Worker</option><option value="creator">Creator</option><option value="business">Business</option></select><p class="form-hint">A foto atual pode ser visualizada, mas o upload será disponibilizado numa etapa futura.</p></div>
+        <div class="profile-form-section"><h4>Informações profissionais</h4><label for="profile-professional-title">Título profissional</label><input id="profile-professional-title" type="text" maxlength="160" placeholder="Ex.: Desenvolvedor Web"><label for="profile-bio">Biografia / apresentação</label><textarea id="profile-bio" maxlength="2000" rows="4"></textarea><label for="profile-skill-input">Competências</label><div class="skills-editor"><div id="profile-skills-editor" class="skills-list"></div><div class="skill-input-row"><input id="profile-skill-input" type="text" maxlength="80" placeholder="Adicionar competência"><button class="btn-secondary" type="button" onclick="addProfileSkill(event)">Adicionar</button></div></div><label for="profile-experience">Experiência profissional</label><textarea id="profile-experience" maxlength="3000" rows="5"></textarea><label for="profile-education">Formação</label><textarea id="profile-education" maxlength="2000" rows="4"></textarea><label for="profile-availability">Disponibilidade</label><input id="profile-availability" type="text" maxlength="160" placeholder="Ex.: Disponível para novos projetos"><label for="profile-hourly-rate">Valor por hora (KZ)</label><input id="profile-hourly-rate" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Opcional"><p class="form-hint">Informe o valor em kwanzas (KZ). Este campo não processa pagamentos.</p></div>
+        <div class="profile-form-section"><h4>Contactos e presença online</h4><label for="profile-location">Localização</label><input id="profile-location" type="text" maxlength="160"><label for="profile-phone">Telefone</label><input id="profile-phone" type="tel" maxlength="40"><label for="profile-website-url">Website / Portfólio</label><input id="profile-website-url" type="url" maxlength="500" placeholder="https://"><label for="profile-linkedin-url">LinkedIn</label><input id="profile-linkedin-url" type="url" maxlength="500" placeholder="https://linkedin.com/in/"></div>
+        <div class="profile-form-actions"><button class="btn-success" id="profile-save-button" type="submit">Salvar Perfil</button><button class="btn-secondary" type="button" onclick="cancelProfileEdit()">Cancelar</button></div>
       </form>
       <p id="profile-message" class="profile-message" role="status" aria-live="polite"></p>
     </div>

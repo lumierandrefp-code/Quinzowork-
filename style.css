@@ -307,6 +307,104 @@ body {
   border-radius: 14px;
 }
 
+.profile-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(165, 180, 252, 0.08));
+}
+
+.profile-avatar-wrap {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-hero-card h3 {
+  margin-top: 5px;
+  color: #fff;
+  font-size: 1.35rem;
+}
+
+.profile-hero-card p {
+  margin: 4px 0 8px;
+  color: #94a3b8;
+}
+
+.profile-role-badge,
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+  color: #bae6fd;
+  background: rgba(14, 165, 233, 0.12);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.profile-display-grid {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.profile-section {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.profile-section h4,
+.profile-form-section h4 {
+  margin-bottom: 14px;
+  color: #38bdf8;
+  font-size: 0.95rem;
+}
+
+.profile-detail {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.profile-detail:last-child {
+  border-bottom: 0;
+}
+
+.profile-detail span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 0.76rem;
+}
+
+.profile-detail p {
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
 .profile-row {
   display: flex;
   justify-content: space-between;
@@ -329,8 +427,85 @@ body {
 
 .profile-form {
   display: grid;
-  gap: 8px;
+  gap: 18px;
   margin-top: 18px;
+}
+
+.profile-form-section {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.profile-form-section textarea {
+  resize: vertical;
+}
+
+.profile-form-section input,
+.profile-form-section select,
+.profile-form-section textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.profile-form-section input:focus,
+.profile-form-section select:focus,
+.profile-form-section textarea:focus {
+  border-color: #00f2fe;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+.form-hint {
+  color: #94a3b8;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.skills-editor {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-chip button {
+  border: 0;
+  color: #bae6fd;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.skill-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.skill-input-row input {
+  margin-bottom: 0;
+}
+
+.skill-input-row .btn-secondary {
+  width: auto;
+  flex: 0 0 auto;
+  padding: 10px 12px;
 }
 
 .profile-form label {

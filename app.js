@@ -73,6 +73,7 @@ const ROLE_LABELS = {
 
 let currentSession = null;
 let currentProfile = null;
+let profileFormSkills = [];
 let isCurrentUserAdmin = false;
 
 async function checkAdminAccess() {
@@ -362,13 +363,65 @@ function updateAuthInterface(session) {
 
   document.getElementById('profile-email').innerText = session.user.email || '';
   const metadataName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
-  document.getElementById('profile-name').innerText = currentProfile?.full_name || metadataName || 'Ainda não informado';
-  document.getElementById('profile-role').innerText = ROLE_LABELS[currentProfile?.role] || 'Ainda não informado';
+  const profile = currentProfile || {};
+  document.getElementById('profile-name').innerText = profile.full_name || metadataName || 'Ainda não informado';
+  document.getElementById('profile-role').innerText = ROLE_LABELS[profile.role] || 'Ainda não informado';
+  document.getElementById('profile-display-title').innerText = profile.professional_title || 'Ainda não informado';
+  document.getElementById('profile-display-location').innerText = profile.location || 'Ainda não informado';
+  document.getElementById('profile-display-bio').innerText = profile.bio || 'Ainda não informado';
+  document.getElementById('profile-display-experience').innerText = profile.experience || 'Ainda não informado';
+  document.getElementById('profile-display-education').innerText = profile.education || 'Ainda não informado';
+  document.getElementById('profile-display-availability').innerText = profile.availability || 'Ainda não informado';
+  document.getElementById('profile-display-hourly-rate').innerText = profile.hourly_rate === null || profile.hourly_rate === undefined || profile.hourly_rate === '' ? 'Ainda não informado' : `KZ ${profile.hourly_rate}/hora`;
+  document.getElementById('profile-display-phone').innerText = profile.phone || 'Ainda não informado';
+  document.getElementById('profile-display-website').innerText = profile.website_url || 'Ainda não informado';
+  document.getElementById('profile-display-linkedin').innerText = profile.linkedin_url || 'Ainda não informado';
+  const skills = Array.isArray(profile.skills) ? profile.skills : [];
+  document.getElementById('profile-display-skills').innerText = skills.length ? skills.join(' · ') : 'Ainda não informado';
+  const avatar = document.getElementById('profile-avatar');
+  avatar.hidden = !profile.avatar_url;
+  if (profile.avatar_url) avatar.src = profile.avatar_url;
 }
 
 function setProfileForm(profile) {
-  document.getElementById('profile-full-name').value = profile?.full_name || currentSession?.user?.user_metadata?.full_name || currentSession?.user?.user_metadata?.name || '';
+  const metadataName = currentSession?.user?.user_metadata?.full_name || currentSession?.user?.user_metadata?.name || '';
+  document.getElementById('profile-full-name').value = profile?.full_name || metadataName;
   document.getElementById('profile-role-select').value = profile?.role || '';
+  document.getElementById('profile-professional-title').value = profile?.professional_title || '';
+  document.getElementById('profile-bio').value = profile?.bio || '';
+  document.getElementById('profile-location').value = profile?.location || '';
+  document.getElementById('profile-phone').value = profile?.phone || '';
+  document.getElementById('profile-website-url').value = profile?.website_url || '';
+  document.getElementById('profile-linkedin-url').value = profile?.linkedin_url || '';
+  document.getElementById('profile-experience').value = profile?.experience || '';
+  document.getElementById('profile-education').value = profile?.education || '';
+  document.getElementById('profile-availability').value = profile?.availability || '';
+  document.getElementById('profile-hourly-rate').value = profile?.hourly_rate ?? '';
+  profileFormSkills = Array.isArray(profile?.skills) ? [...profile.skills] : [];
+  renderProfileSkills(profileFormSkills);
+}
+
+function renderProfileSkills(skills) {
+  const container = document.getElementById('profile-skills-editor');
+  container.innerHTML = skills.map((skill, index) => `<span class="skill-chip">${escapeHtml(skill)}<button type="button" aria-label="Remover ${escapeHtml(skill)}" onclick="removeProfileSkill(${index})">×</button></span>`).join('');
+}
+
+function addProfileSkill(event) {
+  event.preventDefault();
+  const input = document.getElementById('profile-skill-input');
+  const skill = input.value.trim();
+  if (!skill) return;
+  const skills = [...profileFormSkills];
+  const existing = skills.map(item => item.toLowerCase());
+  if (!existing.includes(skill.toLowerCase())) skills.push(skill);
+  profileFormSkills = skills;
+  renderProfileSkills(profileFormSkills);
+  input.value = '';
+}
+
+function removeProfileSkill(index) {
+  profileFormSkills.splice(index, 1);
+  renderProfileSkills(profileFormSkills);
 }
 
 function showProfileMessage(message, isError = false) {
@@ -382,7 +435,7 @@ async function loadProfile(session) {
 
   const { data, error } = await supabaseClient
     .from('profiles')
-    .select('id, full_name, avatar_url, role, created_at, updated_at')
+    .select('id, full_name, avatar_url, role, bio, location, skills, experience, education, website_url, linkedin_url, phone, availability, hourly_rate, professional_title, created_at, updated_at')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -417,17 +470,43 @@ async function saveProfile(event) {
 
   const fullName = document.getElementById('profile-full-name').value.trim();
   const role = document.getElementById('profile-role-select').value;
+  const hourlyRateValue = document.getElementById('profile-hourly-rate').value.trim();
   if (!fullName || !role) {
     showProfileMessage('Informe o nome completo e o tipo de utilizador.', true);
     return;
   }
+  if (hourlyRateValue && (!Number.isFinite(Number(hourlyRateValue)) || Number(hourlyRateValue) < 0)) {
+    showProfileMessage('Informe um valor por hora válido e não negativo.', true);
+    return;
+  }
+
+  const saveButton = document.getElementById('profile-save-button');
+  saveButton.disabled = true;
+  showProfileMessage('Salvando perfil...');
+  const payload = {
+    id: currentSession.user.id,
+    full_name: fullName,
+    role,
+    professional_title: document.getElementById('profile-professional-title').value.trim() || null,
+    bio: document.getElementById('profile-bio').value.trim() || null,
+    location: document.getElementById('profile-location').value.trim() || null,
+    phone: document.getElementById('profile-phone').value.trim() || null,
+    website_url: document.getElementById('profile-website-url').value.trim() || null,
+    linkedin_url: document.getElementById('profile-linkedin-url').value.trim() || null,
+    experience: document.getElementById('profile-experience').value.trim() || null,
+    education: document.getElementById('profile-education').value.trim() || null,
+    availability: document.getElementById('profile-availability').value.trim() || null,
+    hourly_rate: hourlyRateValue ? Number(hourlyRateValue) : null,
+    skills: profileFormSkills
+  };
 
   const { data, error } = await supabaseClient
     .from('profiles')
-    .upsert({ id: currentSession.user.id, full_name: fullName, role }, { onConflict: 'id' })
-    .select('id, full_name, avatar_url, role, created_at, updated_at')
+    .upsert(payload, { onConflict: 'id' })
+    .select('id, full_name, avatar_url, role, bio, location, skills, experience, education, website_url, linkedin_url, phone, availability, hourly_rate, professional_title, created_at, updated_at')
     .single();
 
+  saveButton.disabled = false;
   if (error) {
     showProfileMessage(error.message, true);
     return;
