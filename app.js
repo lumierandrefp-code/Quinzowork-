@@ -720,6 +720,11 @@ async function initializeAuth() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('skills-done-button')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSkillsSelector();
+  });
   loadProducts();
   initializeAuth();
 });
