@@ -577,9 +577,14 @@ async function toggleProfileEditor() {
   showProfileMessage('');
 }
 
-function cancelProfileEdit() {
+function closeProfileEditor() {
   const form = document.getElementById('profile-form');
   form.hidden = true;
+  document.getElementById('profile-skills-picker')?.setAttribute('hidden', '');
+}
+
+function cancelProfileEdit() {
+  closeProfileEditor();
   setProfileForm(currentProfile);
   showProfileMessage('');
 }
@@ -635,7 +640,7 @@ async function saveProfile(event) {
 
   currentProfile = data;
   updateAuthInterface(currentSession);
-  document.getElementById('profile-form').hidden = true;
+  closeProfileEditor();
   showProfileMessage('Perfil atualizado com sucesso.');
 }
 
