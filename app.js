@@ -46,14 +46,99 @@ function showAuthMessage(message, isError = false) {
   element.className = isError ? 'auth-message error' : 'auth-message';
 }
 
+const ROLE_LABELS = {
+  freelancer: 'Freelancer',
+  job_seeker: 'Job Seeker',
+  remote_worker: 'Remote Worker',
+  creator: 'Creator',
+  business: 'Business'
+};
+
+let currentSession = null;
+let currentProfile = null;
+
 function updateAuthInterface(session) {
   const isAuthenticated = Boolean(session?.user);
+  currentSession = session;
   document.getElementById('auth-box').style.display = isAuthenticated ? 'none' : 'block';
   document.getElementById('dashboard').style.display = isAuthenticated ? 'block' : 'none';
 
-  if (isAuthenticated) {
-    document.getElementById('user-welcome').innerText = `Bem-vindo, ${session.user.email}!`;
+  if (!isAuthenticated) {
+    currentProfile = null;
+    showAuthMessage('');
+    return;
   }
+
+  document.getElementById('profile-email').innerText = session.user.email || '';
+  const metadataName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
+  document.getElementById('profile-name').innerText = currentProfile?.full_name || metadataName || 'Ainda não informado';
+  document.getElementById('profile-role').innerText = ROLE_LABELS[currentProfile?.role] || 'Ainda não informado';
+}
+
+function setProfileForm(profile) {
+  document.getElementById('profile-full-name').value = profile?.full_name || currentSession?.user?.user_metadata?.full_name || currentSession?.user?.user_metadata?.name || '';
+  document.getElementById('profile-role-select').value = profile?.role || '';
+}
+
+function showProfileMessage(message, isError = false) {
+  const element = document.getElementById('profile-message');
+  element.innerText = message;
+  element.className = isError ? 'profile-message error' : 'profile-message';
+}
+
+async function loadProfile(session) {
+  if (!session?.user) return;
+
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select('id, full_name, avatar_url, role, created_at, updated_at')
+    .eq('id', session.user.id)
+    .maybeSingle();
+
+  if (error) {
+    currentProfile = null;
+    showProfileMessage('Não foi possível carregar o perfil. Confirme se a tabela profiles foi criada no Supabase.', true);
+  } else {
+    currentProfile = data;
+    setProfileForm(data);
+  }
+  updateAuthInterface(session);
+}
+
+function toggleProfileEditor() {
+  const form = document.getElementById('profile-form');
+  const editing = form.hidden;
+  form.hidden = !editing;
+  if (editing) setProfileForm(currentProfile);
+  showProfileMessage('');
+}
+
+async function saveProfile(event) {
+  event.preventDefault();
+  if (!currentSession?.user) return;
+
+  const fullName = document.getElementById('profile-full-name').value.trim();
+  const role = document.getElementById('profile-role-select').value;
+  if (!fullName || !role) {
+    showProfileMessage('Informe o nome completo e o tipo de utilizador.', true);
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .upsert({ id: currentSession.user.id, full_name: fullName, role }, { onConflict: 'id' })
+    .select('id, full_name, avatar_url, role, created_at, updated_at')
+    .single();
+
+  if (error) {
+    showProfileMessage(error.message, true);
+    return;
+  }
+
+  currentProfile = data;
+  updateAuthInterface(currentSession);
+  document.getElementById('profile-form').hidden = true;
+  showProfileMessage('Perfil atualizado com sucesso.');
 }
 
 async function login() {
@@ -109,8 +194,10 @@ async function initializeAuth() {
   }
 
   updateAuthInterface(data.session);
+  await loadProfile(data.session);
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     updateAuthInterface(session);
+    if (session) loadProfile(session);
   });
 }
 
