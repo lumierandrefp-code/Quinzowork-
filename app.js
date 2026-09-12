@@ -1,7 +1,14 @@
 // Navegação entre abas
 function navigate(pageId) {
+  const targetPage = document.getElementById(pageId);
+  if (!targetPage || !targetPage.classList.contains('page')) return;
+
   document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
+  targetPage.classList.add('active');
+
+  document.querySelectorAll('.nav-links button').forEach(button => {
+    button.setAttribute('aria-current', button.dataset.page === pageId ? 'page' : 'false');
+  });
 }
 
 // Lista de Produtos do QUINZOWORK
