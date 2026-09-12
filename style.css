@@ -1004,6 +1004,17 @@ body {
 .section-subtitle { color: #94a3b8; margin-top: 6px; }
 .jobs-toolbar { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 10px; margin: 20px 0; }
 .jobs-toolbar input, .jobs-toolbar select, .job-offer-form input, .job-offer-form select, .job-offer-form textarea { width: 100%; padding: 12px; border: 1px solid rgba(148,163,184,.24); border-radius: 10px; background: rgba(15,23,42,.72); color: #e2e8f0; }
+
+.jobs-toolbar select, .job-offer-form select {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  cursor: pointer;
+  padding-right: 34px;
+}
+
+.job-offer-form select {
+  color-scheme: dark;
+}
 .jobs-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .job-card { display: grid; gap: 14px; }
 .job-card-heading, .job-card-footer, .job-detail-publisher, .job-owner-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
