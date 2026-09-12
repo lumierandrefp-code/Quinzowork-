@@ -217,6 +217,72 @@ function openAdminProfiles() {
   loadAdminProfiles();
 }
 
+function showAdminDashboardMessage(message, isError = false) {
+  const element = document.getElementById('admin-dashboard-message');
+  element.innerText = message;
+  element.className = isError ? 'admin-users-message error' : 'admin-users-message';
+}
+
+function formatAdminDateTime(value) {
+  if (!value) return 'Não informado';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'Não informado' : date.toLocaleString('pt-BR');
+}
+
+function renderAdminDashboard(stats) {
+  const values = {
+    'total-users': stats.total_users,
+    'total-profiles': stats.total_profiles,
+    freelancers: stats.freelancers,
+    'job-seekers': stats.job_seekers,
+    'remote-workers': stats.remote_workers,
+    creators: stats.creators,
+    businesses: stats.businesses,
+    'recent-users': stats.recent_users
+  };
+  Object.entries(values).forEach(([id, value]) => {
+    document.getElementById(`admin-stat-${id}`).innerText = String(Number(value) || 0);
+  });
+}
+
+async function loadAdminDashboard() {
+  const allowed = await checkAdminAccess();
+  if (!allowed) {
+    document.getElementById('admin-dashboard-view').hidden = true;
+    return;
+  }
+
+  const refreshButton = document.getElementById('admin-dashboard-refresh');
+  const loading = document.getElementById('admin-dashboard-loading');
+  refreshButton.disabled = true;
+  loading.hidden = false;
+  showAdminDashboardMessage('');
+
+  const { data, error } = await supabaseClient.rpc('admin_dashboard_stats');
+  refreshButton.disabled = false;
+  loading.hidden = true;
+
+  if (error) {
+    showAdminDashboardMessage(`Não foi possível carregar o dashboard: ${error.message}`, true);
+    return;
+  }
+
+  const stats = Array.isArray(data) ? data[0] : data;
+  if (!stats) {
+    showAdminDashboardMessage('Nenhum dado administrativo encontrado.', true);
+    return;
+  }
+
+  renderAdminDashboard(stats);
+  document.getElementById('admin-dashboard-updated').innerText = `Última atualização: ${formatAdminDateTime(new Date())}`;
+  showAdminDashboardMessage('Dados administrativos carregados com segurança.');
+}
+
+function openAdminDashboard() {
+  document.getElementById('admin-dashboard-view').hidden = false;
+  loadAdminDashboard();
+}
+
 function updateAuthInterface(session) {
   const isAuthenticated = Boolean(session?.user);
   currentSession = session;

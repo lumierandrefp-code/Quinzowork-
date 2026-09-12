@@ -561,6 +561,40 @@ body {
   text-align: center;
 }
 
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-stat-card {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-stat-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.admin-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #f8fafc;
+  font-size: 1.7rem;
+}
+
+.admin-dashboard-updated {
+  margin-top: 14px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
 @media (max-width: 440px) {
   .admin-panel {
     padding: 18px;
@@ -574,7 +608,8 @@ body {
     width: 100%;
   }
 
-  .admin-grid {
+  .admin-grid,
+  .admin-stats-grid {
     grid-template-columns: 1fr;
   }
 
