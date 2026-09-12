@@ -90,7 +90,7 @@
         <div class="profile-avatar-area"><span class="profile-avatar-label">Foto de perfil</span><button class="profile-avatar-wrap" id="profile-avatar-button" type="button" onclick="openAvatarPicker()" aria-label="Alterar foto de perfil"><img id="profile-avatar" class="profile-avatar" alt="Foto de perfil" hidden><span id="profile-avatar-placeholder" class="profile-avatar-placeholder" aria-hidden="true">Foto</span></button><input id="profile-avatar-input" type="file" accept="image/jpeg,image/png,image/webp" hidden onchange="handleAvatarSelection(event)"><button class="btn-secondary profile-avatar-change" id="profile-avatar-change" type="button" onclick="openAvatarPicker()">Alterar foto</button></div>
         <div><span class="eyebrow">PERFIL PROFISSIONAL</span><h3 id="profile-name">Ainda não informado</h3><p id="profile-display-title">Ainda não informado</p><span class="profile-role-badge" id="profile-role">Ainda não informado</span></div>
       </div>
-      <button class="btn-primary" onclick="toggleProfileEditor()">Editar Perfil</button>
+      <div class="profile-action-row"><button class="btn-primary" type="button" onclick="toggleProfileEditor()">Editar Perfil</button><button class="btn-secondary" type="button" onclick="openCurrentUserPublicProfile()">Ver Perfil Público</button></div>
       <div class="profile-display-grid">
         <section class="profile-section"><h4>Informações profissionais</h4><div class="profile-detail"><span>Biografia</span><p id="profile-display-bio">Ainda não informado</p></div><div class="profile-detail"><span>Competências</span><p id="profile-display-skills">Ainda não informado</p></div><div class="profile-detail"><span>Experiência</span><p id="profile-display-experience">Ainda não informado</p></div><div class="profile-detail"><span>Formação</span><p id="profile-display-education">Ainda não informado</p></div><div class="profile-detail"><span>Disponibilidade</span><p id="profile-display-availability">Ainda não informado</p></div><div class="profile-detail"><span>Valor por hora</span><p id="profile-display-hourly-rate">Ainda não informado</p></div></section>
         <section class="profile-section"><h4>Contactos e presença online</h4><div class="profile-detail"><span>E-mail da conta</span><p id="profile-email"></p></div><div class="profile-detail"><span>Localização</span><p id="profile-display-location">Ainda não informado</p></div><div class="profile-detail"><span>Telefone</span><p id="profile-display-phone">Ainda não informado</p></div><div class="profile-detail"><span>Website / Portfólio</span><p id="profile-display-website">Ainda não informado</p></div><div class="profile-detail"><span>LinkedIn</span><p id="profile-display-linkedin">Ainda não informado</p></div></section>
@@ -105,7 +105,35 @@
     </div>
   </section>
 
-  <!-- 4. ADMINISTRAÇÃO PROTEGIDA -->
+  <!-- 4. PERFIL PÚBLICO -->
+  <section id="public-profile" class="page">
+    <div class="public-profile-shell">
+      <div class="profile-heading">
+        <div>
+          <span class="eyebrow">PERFIL PÚBLICO</span>
+          <h2>Perfil profissional</h2>
+        </div>
+        <button class="btn-secondary" type="button" onclick="closePublicProfile()">Voltar</button>
+      </div>
+      <div id="public-profile-loading" class="profile-state">Carregando perfil...</div>
+      <div id="public-profile-error" class="profile-state error" hidden></div>
+      <article id="public-profile-content" class="public-profile-card" hidden>
+        <div class="public-profile-identity">
+          <div class="profile-avatar-wrap public-profile-avatar"><img id="public-profile-avatar" class="profile-avatar" alt="Foto do perfil" hidden><span id="public-profile-placeholder" class="profile-avatar-placeholder" aria-hidden="true">Foto</span></div>
+          <div><span class="eyebrow">PERFIL PROFISSIONAL</span><h3 id="public-profile-name">Não informado</h3><p id="public-profile-title">Não informado</p><span id="public-profile-role" class="profile-role-badge">Não informado</span></div>
+        </div>
+        <div class="public-profile-actions"><button id="public-profile-edit" class="btn-primary" type="button" onclick="openOwnProfileEditor()" hidden>Editar Perfil</button></div>
+        <div class="profile-display-grid public-profile-grid">
+          <section class="profile-section"><h4>Apresentação</h4><div class="profile-detail"><span>Biografia</span><p id="public-profile-bio">Não informado</p></div><div class="profile-detail"><span>Competências</span><p id="public-profile-skills">Não informado</p></div></section>
+          <section class="profile-section"><h4>Experiência profissional</h4><div class="profile-detail"><span>Experiência</span><p id="public-profile-experience">Não informado</p></div><div class="profile-detail"><span>Educação</span><p id="public-profile-education">Não informado</p></div></section>
+          <section class="profile-section"><h4>Disponibilidade e preço</h4><div class="profile-detail"><span>Disponibilidade</span><p id="public-profile-availability">Não informado</p></div><div class="profile-detail"><span>Preço por hora</span><p id="public-profile-hourly-rate">Não informado</p></div><div class="profile-detail"><span>Localização</span><p id="public-profile-location">Não informado</p></div></section>
+          <section class="profile-section"><h4>Presença online</h4><div class="profile-detail"><span>Website</span><p id="public-profile-website">Não informado</p></div><div class="profile-detail"><span>LinkedIn</span><p id="public-profile-linkedin">Não informado</p></div></section>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 5. ADMINISTRAÇÃO PROTEGIDA -->
   <section id="admin" class="page">
     <div class="admin-panel" id="admin-panel" hidden>
       <div class="profile-heading">

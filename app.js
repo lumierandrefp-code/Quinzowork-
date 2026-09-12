@@ -21,6 +21,97 @@ async function navigate(pageId) {
   });
 }
 
+const PUBLIC_PROFILE_FIELDS = 'id, full_name, avatar_url, role, bio, location, skills, experience, education, website_url, linkedin_url, availability, hourly_rate, professional_title';
+let publicProfileId = null;
+
+function showPublicProfileState({ loading = false, error = '', visible = false } = {}) {
+  document.getElementById('public-profile-loading').hidden = !loading;
+  document.getElementById('public-profile-error').hidden = !error;
+  document.getElementById('public-profile-error').innerText = error;
+  document.getElementById('public-profile-content').hidden = !visible;
+}
+
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function setPublicProfileLink(id, value) {
+  const element = document.getElementById(id);
+  const url = safeExternalUrl(value);
+  element.innerHTML = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>` : 'Não informado';
+}
+
+function updatePublicProfileAvatar(url) {
+  const image = document.getElementById('public-profile-avatar');
+  const placeholder = document.getElementById('public-profile-placeholder');
+  image.hidden = !url;
+  placeholder.hidden = Boolean(url);
+  if (url) image.src = url;
+}
+
+function renderPublicProfile(profile) {
+  const text = (value) => value || 'Não informado';
+  document.getElementById('public-profile-name').innerText = text(profile.full_name);
+  document.getElementById('public-profile-title').innerText = text(profile.professional_title);
+  document.getElementById('public-profile-role').innerText = ROLE_LABELS[profile.role] || text(profile.role);
+  document.getElementById('public-profile-bio').innerText = text(profile.bio);
+  document.getElementById('public-profile-skills').innerText = Array.isArray(profile.skills) && profile.skills.length ? profile.skills.slice(0, 5).join(' · ') : 'Não informado';
+  document.getElementById('public-profile-experience').innerText = text(profile.experience);
+  document.getElementById('public-profile-education').innerText = text(profile.education);
+  document.getElementById('public-profile-availability').innerText = text(profile.availability);
+  document.getElementById('public-profile-hourly-rate').innerText = profile.hourly_rate === null || profile.hourly_rate === undefined || profile.hourly_rate === '' ? 'Não informado' : `KZ ${profile.hourly_rate}/hora`;
+  document.getElementById('public-profile-location').innerText = text(profile.location);
+  setPublicProfileLink('public-profile-website', profile.website_url);
+  setPublicProfileLink('public-profile-linkedin', profile.linkedin_url);
+  updatePublicProfileAvatar(profile.avatar_url);
+  const isOwnProfile = Boolean(currentSession?.user?.id && currentSession.user.id === profile.id);
+  document.getElementById('public-profile-edit').hidden = !isOwnProfile;
+}
+
+async function openPublicProfile(profileId) {
+  if (!profileId) return;
+  publicProfileId = profileId;
+  showPublicProfileState({ loading: true });
+  await navigate('public-profile');
+  const { data, error } = await supabaseClient.from('profiles').select(PUBLIC_PROFILE_FIELDS).eq('id', profileId).maybeSingle();
+  if (error) {
+    showPublicProfileState({ error: 'Não foi possível carregar este perfil.' });
+    return;
+  }
+  if (!data) {
+    showPublicProfileState({ error: 'Perfil não encontrado' });
+    return;
+  }
+  renderPublicProfile(data);
+  showPublicProfileState({ visible: true });
+}
+
+function closePublicProfile() {
+  publicProfileId = null;
+  navigate(currentSession?.user ? 'sistema' : 'home');
+}
+
+function openOwnProfileEditor() {
+  navigate('sistema');
+  toggleProfileEditor();
+}
+
+function openProfileFromUrl() {
+  const match = window.location.pathname.match(/^\/profile\/([^/]+)\/?$/);
+  if (match) openPublicProfile(decodeURIComponent(match[1]));
+}
+
+function openCurrentUserPublicProfile() {
+  if (!currentSession?.user?.id) return;
+  window.history.pushState({}, '', `/profile/${currentSession.user.id}`);
+  openPublicProfile(currentSession.user.id);
+}
+
 // Lista de Produtos do QUINZOWORK
 const products = [
   { id: 1, name: 'Serviço de Desenvolvimento Web', price: '2500,00', desc: 'Criação de site completo responsivo.' },
@@ -803,4 +894,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   loadProducts();
   initializeAuth();
+  openProfileFromUrl();
 });
