@@ -387,7 +387,13 @@ function setProfileForm(profile) {
   const metadataName = currentSession?.user?.user_metadata?.full_name || currentSession?.user?.user_metadata?.name || '';
   document.getElementById('profile-full-name').value = profile?.full_name || metadataName;
   document.getElementById('profile-role-select').value = profile?.role || '';
-  document.getElementById('profile-professional-title').value = profile?.professional_title || '';
+  const professionalTitleSelect = document.getElementById('profile-professional-title');
+  const existingTitle = profile?.professional_title || '';
+  if (existingTitle && !Array.from(professionalTitleSelect.options).some(option => option.value === existingTitle)) {
+    const legacyOption = new Option(`${existingTitle} (atual)`, existingTitle);
+    professionalTitleSelect.insertBefore(legacyOption, professionalTitleSelect.options[1]);
+  }
+  professionalTitleSelect.value = existingTitle;
   document.getElementById('profile-bio').value = profile?.bio || '';
   document.getElementById('profile-location').value = profile?.location || '';
   document.getElementById('profile-phone').value = profile?.phone || '';
