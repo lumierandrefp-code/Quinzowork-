@@ -127,7 +127,7 @@
         <article class="card admin-card"><h3>Dashboard</h3><p>Visão geral administrativa</p><button class="btn-primary" type="button" onclick="openAdminDashboard()">Abrir Dashboard</button></article>
         <article class="card admin-card admin-users-card"><h3>Utilizadores</h3><p>Gestão de contas autenticadas</p><button class="btn-primary" type="button" onclick="openAdminUsers()">Abrir Utilizadores</button></article>
         <article class="card admin-card admin-profiles-card"><h3>Perfis</h3><p>Consulta de perfis da plataforma</p><button class="btn-primary" type="button" onclick="openAdminProfiles()">Abrir Perfis</button></article>
-        <article class="card admin-card"><h3>Estado da plataforma</h3><p>Indicadores operacionais</p><span>Em preparação</span></article>
+        <article class="card admin-card"><h3>Estado da plataforma</h3><p>Indicadores operacionais</p><button class="btn-primary" type="button" onclick="openAdminPlatform()">Verificar estado</button></article>
       </div>
       <section class="admin-users-view" id="admin-dashboard-view" hidden aria-labelledby="admin-dashboard-title">
         <div class="admin-users-heading">
@@ -150,6 +150,27 @@
         <p class="admin-users-message" id="admin-dashboard-message" role="status" aria-live="polite"></p>
         <p class="admin-users-loading" id="admin-dashboard-loading" hidden>Carregando dashboard...</p>
         <p class="admin-dashboard-updated" id="admin-dashboard-updated">Última atualização: Ainda não carregado</p>
+      </section>
+      <section class="admin-users-view" id="admin-platform-view" hidden aria-labelledby="admin-platform-title">
+        <div class="admin-users-heading">
+          <div>
+            <span class="eyebrow">MONITORIZAÇÃO EM TEMPO REAL</span>
+            <h3 id="admin-platform-title">Estado da plataforma</h3>
+          </div>
+          <button class="btn-secondary admin-users-refresh" id="admin-platform-refresh" type="button" onclick="loadAdminPlatformStatus()">Verificar novamente</button>
+        </div>
+        <div class="admin-platform-checks" aria-live="polite">
+          <div class="admin-platform-check"><span>Autenticação</span><strong class="admin-platform-status operational" id="admin-platform-authentication">Aguardando</strong></div>
+          <div class="admin-platform-check"><span>Banco de dados</span><strong class="admin-platform-status operational" id="admin-platform-database">Aguardando</strong></div>
+          <div class="admin-platform-check"><span>API administrativa</span><strong class="admin-platform-status operational" id="admin-platform-api">Aguardando</strong></div>
+        </div>
+        <div class="admin-platform-stats" aria-live="polite">
+          <div class="admin-platform-stat"><span>Total de utilizadores</span><strong id="admin-platform-users">0</strong></div>
+          <div class="admin-platform-stat"><span>Total de perfis</span><strong id="admin-platform-profiles">0</strong></div>
+        </div>
+        <p class="admin-users-message" id="admin-platform-message" role="status" aria-live="polite"></p>
+        <p class="admin-users-loading" id="admin-platform-loading" hidden>Verificando estado da plataforma...</p>
+        <p class="admin-platform-updated">Última verificação: <strong id="admin-platform-checked">Ainda não verificado</strong></p>
       </section>
       <section class="admin-users-view" id="admin-users-view" hidden aria-labelledby="admin-users-title">
         <div class="admin-users-heading">

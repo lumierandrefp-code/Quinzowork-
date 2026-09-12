@@ -217,6 +217,68 @@ function openAdminProfiles() {
   loadAdminProfiles();
 }
 
+function showAdminPlatformMessage(message, isError = false) {
+  const element = document.getElementById('admin-platform-message');
+  element.innerText = message;
+  element.className = isError ? 'admin-users-message error' : 'admin-users-message';
+}
+
+function renderAdminPlatformStatus(status) {
+  const checks = [
+    ['admin-platform-authentication', status.authentication_status],
+    ['admin-platform-database', status.database_status],
+    ['admin-platform-api', status.admin_api_status]
+  ];
+
+  checks.forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    const operational = value === 'Operacional';
+    element.innerText = operational ? 'Operacional' : 'Problema detectado';
+    element.className = `admin-platform-status ${operational ? 'operational' : 'problem'}`;
+  });
+
+  document.getElementById('admin-platform-users').innerText = String(Number(status.total_users) || 0);
+  document.getElementById('admin-platform-profiles').innerText = String(Number(status.total_profiles) || 0);
+  document.getElementById('admin-platform-checked').innerText = formatAdminDateTime(status.checked_at);
+}
+
+async function loadAdminPlatformStatus() {
+  const allowed = await checkAdminAccess();
+  if (!allowed) {
+    document.getElementById('admin-platform-view').hidden = true;
+    return;
+  }
+
+  const refreshButton = document.getElementById('admin-platform-refresh');
+  const loading = document.getElementById('admin-platform-loading');
+  refreshButton.disabled = true;
+  loading.hidden = false;
+  showAdminPlatformMessage('');
+
+  const { data, error } = await supabaseClient.rpc('admin_platform_status');
+  refreshButton.disabled = false;
+  loading.hidden = true;
+
+  if (error) {
+    showAdminPlatformMessage(`Não foi possível verificar a plataforma: ${error.message}`, true);
+    return;
+  }
+
+  const status = Array.isArray(data) ? data[0] : data;
+  if (!status) {
+    showAdminPlatformMessage('Nenhum estado da plataforma foi retornado.', true);
+    return;
+  }
+
+  renderAdminPlatformStatus(status);
+  showAdminPlatformMessage('Verificação concluída com segurança.');
+}
+
+function openAdminPlatform() {
+  document.getElementById('admin-platform-view').hidden = false;
+  loadAdminPlatformStatus();
+}
+
 function showAdminDashboardMessage(message, isError = false) {
   const element = document.getElementById('admin-dashboard-message');
   element.innerText = message;

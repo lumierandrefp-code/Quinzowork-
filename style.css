@@ -427,6 +427,56 @@ body {
   text-transform: uppercase;
 }
 
+.admin-platform-checks,
+.admin-platform-stats {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-platform-check,
+.admin-platform-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-platform-check span:first-child,
+.admin-platform-stat span {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  text-transform: none;
+}
+
+.admin-platform-status {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-platform-status.operational {
+  color: #6ee7b7;
+}
+
+.admin-platform-status.problem {
+  color: #fda4af;
+}
+
+.admin-platform-stat strong {
+  color: #38bdf8;
+  font-size: 1.1rem;
+}
+
+.admin-platform-updated {
+  margin-top: 14px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
 .admin-denied {
   max-width: 520px;
   margin: 0 auto;
