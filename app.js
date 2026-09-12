@@ -271,8 +271,9 @@ function renderAdminProfiles(profiles) {
       <td data-label="Tipo de utilizador">${escapeHtml(ROLE_LABELS[profile.user_type] || 'Não informado')}</td>
       <td data-label="Avatar">${profile.avatar_url ? '<span class="status-active">Disponível</span>' : 'Não informado'}</td>
       <td data-label="Data de criação">${escapeHtml(formatAdminDate(profile.created_at))}</td>
-      <td data-label="Última atualização">${escapeHtml(formatAdminDate(profile.updated_at))}</td>
-    </tr>
+  <td data-label="Última atualização">${escapeHtml(formatAdminDate(profile.updated_at))}</td>
+  <td data-label="Perfil público"><button class="btn-secondary admin-profile-link" type="button" onclick="openPublicProfile('${escapeHtml(profile.user_id || profile.id || '')}')" ${profile.user_id || profile.id ? '' : 'disabled'}>Ver perfil</button></td>
+  </tr>
   `).join('');
   table.hidden = profiles.length === 0;
   emptyState.hidden = profiles.length !== 0;
