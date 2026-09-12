@@ -29,6 +29,7 @@ const products = [
 ];
 
 let cartCount = 0;
+let skillsSelectorOpen = false;
 
 function loadProducts() {
   const container = document.getElementById('products-list');
@@ -491,27 +492,23 @@ function filterSkillOptions() {
   renderSkillOptions(document.getElementById('profile-skill-search').value);
 }
 
-function closeSkillsSelector() {
+function updateSkillsSelectorUI() {
   const picker = document.getElementById('profile-skills-picker');
   if (!picker) return;
-  picker.hidden = true;
-  picker.setAttribute('hidden', 'hidden');
-  picker.setAttribute('aria-hidden', 'true');
-  picker.style.display = 'none';
+  picker.hidden = !skillsSelectorOpen;
+  picker.setAttribute('aria-hidden', String(!skillsSelectorOpen));
+  picker.style.display = skillsSelectorOpen ? 'grid' : 'none';
+}
+
+function closeSkillsSelector() {
+  skillsSelectorOpen = false;
+  updateSkillsSelectorUI();
 }
 
 function toggleSkillsPicker(force) {
-  const picker = document.getElementById('profile-skills-picker');
-  if (!picker) return;
-  const shouldOpen = typeof force === 'boolean' ? force : picker.hidden;
-  if (!shouldOpen) {
-  closeSkillsSelector();
-  return;
-  }
-  picker.hidden = false;
-  picker.removeAttribute('hidden');
-  picker.setAttribute('aria-hidden', 'false');
-  picker.style.display = '';
+  skillsSelectorOpen = typeof force === 'boolean' ? force : !skillsSelectorOpen;
+  updateSkillsSelectorUI();
+  if (!skillsSelectorOpen) return;
   document.getElementById('profile-skill-search').value = '';
   renderSkillOptions();
   document.getElementById('profile-skill-search').focus();
