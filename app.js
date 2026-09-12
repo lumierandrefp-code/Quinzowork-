@@ -1,7 +1,17 @@
 // Navegação entre abas
-function navigate(pageId) {
+async function navigate(pageId) {
   const targetPage = document.getElementById(pageId);
   if (!targetPage || !targetPage.classList.contains('page')) return;
+
+  if (pageId === 'admin') {
+    const allowed = await checkAdminAccess();
+    document.getElementById('admin-panel').hidden = !allowed;
+    document.getElementById('admin-denied').hidden = allowed;
+    if (!allowed) {
+      showAuthMessage('Você não tem permissão para acessar esta área.', true);
+      pageId = 'sistema';
+    }
+  }
 
   document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
   targetPage.classList.add('active');
@@ -63,6 +73,20 @@ const ROLE_LABELS = {
 
 let currentSession = null;
 let currentProfile = null;
+let isCurrentUserAdmin = false;
+
+async function checkAdminAccess() {
+  if (!currentSession?.user) {
+    isCurrentUserAdmin = false;
+    document.getElementById('admin-nav').hidden = true;
+    return false;
+  }
+
+  const { data, error } = await supabaseClient.rpc('is_admin');
+  isCurrentUserAdmin = !error && data === true;
+  document.getElementById('admin-nav').hidden = !isCurrentUserAdmin;
+  return isCurrentUserAdmin;
+}
 
 function updateAuthInterface(session) {
   const isAuthenticated = Boolean(session?.user);
@@ -72,6 +96,9 @@ function updateAuthInterface(session) {
 
   if (!isAuthenticated) {
     currentProfile = null;
+    isCurrentUserAdmin = false;
+    document.getElementById('admin-nav').hidden = true;
+    document.getElementById('admin-panel').hidden = true;
     showAuthMessage('');
     return;
   }
@@ -209,9 +236,12 @@ async function initializeAuth() {
 
   updateAuthInterface(data.session);
   await loadProfile(data.session);
+  await checkAdminAccess();
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     updateAuthInterface(session);
-    if (session) loadProfile(session);
+    if (session) {
+      loadProfile(session).then(checkAdminAccess);
+    }
   });
 }
 

@@ -384,7 +384,85 @@ body {
   color: #fda4af;
 }
 
+.admin-panel {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  background: rgba(20, 20, 45, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+.admin-panel h2 {
+  color: #fff;
+  margin-top: 5px;
+}
+
+.admin-back {
+  width: auto;
+  white-space: nowrap;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-card {
+  min-height: 150px;
+}
+
+.admin-card p {
+  margin-bottom: 18px;
+}
+
+.admin-card span {
+  display: inline-block;
+  color: #fbbf24;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.admin-denied {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  background: rgba(20, 20, 45, 0.6);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: 20px;
+}
+
+.admin-denied h2 {
+  color: #fda4af;
+  margin-bottom: 8px;
+}
+
+.admin-denied p {
+  color: #cbd5e1;
+}
+
 @media (max-width: 440px) {
+  .admin-panel {
+    padding: 18px;
+  }
+
+  .profile-heading {
+    flex-direction: column;
+  }
+
+  .admin-back {
+    width: 100%;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
   .profile-row {
     align-items: flex-start;
     flex-direction: column;
