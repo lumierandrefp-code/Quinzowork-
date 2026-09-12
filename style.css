@@ -318,6 +318,12 @@ body {
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(165, 180, 252, 0.08));
 }
 
+.profile-avatar-area {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
 .profile-avatar-wrap {
   display: grid;
   width: 72px;
@@ -330,10 +336,27 @@ body {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.profile-avatar-wrap {
+  padding: 0;
+  cursor: pointer;
+}
+
+.profile-avatar-wrap:disabled,
+.profile-avatar-change:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .profile-avatar {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.profile-avatar-placeholder {
+  color: #bae6fd;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .profile-hero-card h3 {

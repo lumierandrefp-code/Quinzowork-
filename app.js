@@ -379,9 +379,85 @@ function updateAuthInterface(session) {
   document.getElementById('profile-display-linkedin').innerText = profile.linkedin_url || 'Ainda não informado';
   const skills = Array.isArray(profile.skills) ? profile.skills : [];
   document.getElementById('profile-display-skills').innerText = skills.length ? skills.join(' · ') : 'Ainda não informado';
+  updateProfileAvatar(profile.avatar_url);
+  }
+
+function updateProfileAvatar(url) {
   const avatar = document.getElementById('profile-avatar');
-  avatar.hidden = !profile.avatar_url;
-  if (profile.avatar_url) avatar.src = profile.avatar_url;
+  const placeholder = document.getElementById('profile-avatar-placeholder');
+  avatar.hidden = !url;
+  placeholder.hidden = Boolean(url);
+  if (url) avatar.src = url;
+}
+
+function openAvatarPicker() {
+  if (!currentSession?.user) return;
+  document.getElementById('profile-avatar-input').click();
+}
+
+async function handleAvatarSelection(event) {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+  if (!file || !currentSession?.user) return;
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    showProfileMessage('Escolha uma imagem JPG, PNG ou WebP.', true);
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showProfileMessage('A imagem deve ter no máximo 5 MB.', true);
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+  updateProfileAvatar(previewUrl);
+  const avatarButton = document.getElementById('profile-avatar-button');
+  const changeButton = document.getElementById('profile-avatar-change');
+  avatarButton.disabled = true;
+  changeButton.disabled = true;
+  showProfileMessage('Enviando...');
+
+  const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  const filePath = `${currentSession.user.id}/${crypto.randomUUID()}.${extension}`;
+  const { error: uploadError } = await supabaseClient.storage
+    .from('avatares')
+    .upload(filePath, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) {
+    avatarButton.disabled = false;
+    changeButton.disabled = false;
+    showProfileMessage(`Não foi possível enviar a foto: ${uploadError.message}`, true);
+    return;
+  }
+
+  const { data: publicUrlData } = supabaseClient.storage.from('avatares').getPublicUrl(filePath);
+  const avatarUrl = publicUrlData?.publicUrl;
+  if (!avatarUrl) {
+    avatarButton.disabled = false;
+    changeButton.disabled = false;
+    showProfileMessage('Não foi possível obter o endereço da foto.', true);
+    return;
+  }
+
+  const { data, error: profileError } = await supabaseClient
+    .from('profiles')
+    .update({ avatar_url: avatarUrl })
+    .eq('id', currentSession.user.id)
+    .select()
+    .single();
+
+  avatarButton.disabled = false;
+  changeButton.disabled = false;
+  if (profileError) {
+    showProfileMessage(`A foto foi enviada, mas não foi possível guardar o perfil: ${profileError.message}`, true);
+    return;
+  }
+
+  currentProfile = data;
+  updateProfileAvatar(avatarUrl);
+  updateAuthInterface(currentSession);
+  showProfileMessage('Foto de perfil atualizada com sucesso.');
 }
 
 function setProfileForm(profile) {
