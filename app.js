@@ -136,6 +136,26 @@ function formatJobBudget(value, paymentType) {
   return `KZ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ${paymentType ? `/ ${paymentType.toLowerCase()}` : ''}`;
 }
 
+function getJobLocationParts() {
+  return ['job-street', 'job-city', 'job-province', 'job-postal-code', 'job-country']
+    .map(id => document.getElementById(id)?.value.trim())
+    .filter(Boolean);
+}
+
+function getJobLocation() {
+  const general = document.getElementById('job-location').value.trim();
+  const parts = getJobLocationParts();
+  return [...new Set([general, ...parts].filter(Boolean))].join(', ');
+}
+
+function setJobLocation(location) {
+  ['job-street', 'job-city', 'job-province', 'job-postal-code', 'job-country'].forEach(id => {
+    const field = document.getElementById(id);
+    if (field) field.value = '';
+  });
+  document.getElementById('job-location').value = location || '';
+}
+
 function showJobsMessage(message, isError = false) {
   const element = document.getElementById('jobs-message');
   element.innerText = message;
@@ -244,7 +264,7 @@ function openJobOfferForm(offer = null) {
     document.getElementById('job-experience-form').value = offer.experience_level || '';
     document.getElementById('job-payment-form').value = offer.payment_type || '';
     document.getElementById('job-budget').value = offer.budget ?? '';
-    document.getElementById('job-location').value = offer.location || '';
+    setJobLocation(offer.location);
     document.getElementById('job-skills').value = jobSkills(offer.skills).join(', ');
   }
   document.getElementById('job-offer-form').hidden = false;
@@ -266,7 +286,7 @@ async function saveJobOffer(event) {
   const experience = document.getElementById('job-experience-form').value;
   const payment = document.getElementById('job-payment-form').value;
   const budget = Number(document.getElementById('job-budget').value);
-  const location = document.getElementById('job-location').value.trim();
+  const location = getJobLocation();
   const skills = jobSkills(document.getElementById('job-skills').value);
   if (!title || !description || !category || !workType || !experience || !payment || !Number.isFinite(budget) || budget < 0 || skills.length > 5 || ((workType === 'Presencial' || workType === 'Híbrido') && !location)) {
     showJobsMessage('Preencha os campos obrigatórios. Use um orçamento válido e até 5 competências.', true);
@@ -1120,9 +1140,14 @@ async function initializeAuth() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('skills-done-button')?.addEventListener('click', (event) => {
     event.preventDefault();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     closeSkillsSelector();
-  });
+  }, true);
+  document.getElementById('profile-skills-add')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    toggleSkillsPicker();
+  }, true);
   loadProducts();
   initializeAuth();
   openProfileFromUrl();
